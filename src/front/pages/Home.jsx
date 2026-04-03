@@ -27,9 +27,24 @@ export const Home = () => {
 		}
 
 	}
+	const apiAuth = async () => {
+		try {
+			//need to reformat this and remove my secret key and replace with a concat on the location (process.env.client_secret)
+			//const response = await fetch("https://id.twitch.tv/oauth2/token?client_id=dfarh6uy42ex46tz3xsjeco60pqlqt&client_secret=INSERT SECRET KEY LOCATION HERE &grant_type=client_credentials", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			})
+
+			const data = await response.json()
+			console.log(data)
+		} catch (err) {
+			return { error: err.message || "credentials failed" }
+		}}
+
+
 
 	useEffect(() => {
-		loadMessage()
+		apiAuth()
 	}, [])
 
 	return (
