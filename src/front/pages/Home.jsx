@@ -1,50 +1,38 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import useActions from "../hooks/useActions.jsx";
+
 
 export const Home = () => {
 
 	const { store, dispatch } = useGlobalReducer()
+	const { postToIGDB } = useActions()
+	const [games, setGames] = useState([])
+	const [loadingGames, setLoadingGames] = useState(false)
 
-	const loadMessage = async () => {
+	const fetchGames = async () => {
+		setLoadingGames(true)
 		try {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL
-
-			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
-
-			const response = await fetch(backendUrl + "/api/hello")
-			const data = await response.json()
-
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
-
-			return data
-
+			const result = await postToIGDB("games", `
+				fields name, summary, cover.url;
+				search "zelda";
+				limit 5;
+			`)
+			if (result.error) {
+				console.error("Error fetching games:", result.error)
+			} else {
+				setGames(result)
+			}
 		} catch (error) {
-			if (error.message) throw new Error(
-				`Could not fetch the message from the backend.
-				Please check if the backend is running and the backend port is public.`
-			);
+			console.error("Failed to fetch games:", error)
+		} finally {
+			setLoadingGames(false)
 		}
-
 	}
-	const apiAuth = async () => {
-		try {
-			//need to reformat this and remove my secret key and replace with a concat on the location (process.env.client_secret)
-			//const response = await fetch("https://id.twitch.tv/oauth2/token?client_id=dfarh6uy42ex46tz3xsjeco60pqlqt&client_secret=INSERT SECRET KEY LOCATION HERE &grant_type=client_credentials", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-			})
-
-			const data = await response.json()
-			console.log(data)
-		} catch (err) {
-			return { error: err.message || "credentials failed" }
-		}}
-
-
 
 	useEffect(() => {
-		apiAuth()
+		loadMessage()
 	}, [])
 
 	return (
@@ -62,6 +50,41 @@ export const Home = () => {
 					</span>
 				)}
 			</div>
+			<div className="mt-4">
+				<button
+					className="btn btn-primary"
+					onClick={fetchGames}
+					disabled={loadingGames}
+				>
+					{loadingGames ? "Loading Games..." : "Fetch Games from IGDB"}
+				</button>
+			</div>
+			{games.length > 0 && (
+				<div className="mt-4">
+					<h3>Games from IGDB:</h3>
+					<div className="row">
+						{games.map((game, index) => (
+							<div key={index} className="col-md-4 mb-3">
+								<div className="card">
+									{game.cover && game.cover.url && (
+										<img
+											src={`https:${game.cover.url.replace('t_thumb', 't_cover_big')}`}
+											className="card-img-top"
+											alt={game.name}
+										/>
+									)}
+									<div className="card-body">
+										<h5 className="card-title">{game.name}</h5>
+										<p className="card-text">
+											{game.summary ? game.summary.substring(0, 100) + "..." : "No summary available"}
+										</p>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }; 
