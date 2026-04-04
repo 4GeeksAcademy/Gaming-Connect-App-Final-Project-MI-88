@@ -11,13 +11,22 @@ export const Home = () => {
 	const [games, setGames] = useState([])
 	const [loadingGames, setLoadingGames] = useState(false)
 
+	const formatDate = (timestamp) => {
+		if (!timestamp) return "No release date available"
+		const date = new Date(timestamp * 1000) // Unix timestamp is in seconds
+		const month = (date.getMonth() + 1).toString().padStart(2, '0')
+		const day = date.getDate().toString().padStart(2, '0')
+		const year = date.getFullYear()
+		return `${month}/${day}/${year}`
+	}
+
 	const fetchGames = async () => {
 		setLoadingGames(true)
 		try {
 			const result = await postToIGDB("games", `
-				fields name, summary, cover.url;
-				search "zelda";
-				limit 5;
+				fields name, first_release_date, total_rating, cover.url;
+				search "halo";
+				limit 10;
 			`)
 			if (result.error) {
 				console.error("Error fetching games:", result.error)
@@ -32,7 +41,6 @@ export const Home = () => {
 	}
 
 	useEffect(() => {
-		loadMessage()
 	}, [])
 
 	return (
@@ -76,7 +84,10 @@ export const Home = () => {
 									<div className="card-body">
 										<h5 className="card-title">{game.name}</h5>
 										<p className="card-text">
-											{game.summary ? game.summary.substring(0, 100) + "..." : "No summary available"}
+											Release Date: {formatDate(game.first_release_date)}
+										</p>
+										<p className="card-text">
+											{game.total_rating ? `Rating: ${game.total_rating.toFixed(2)}` : "No rating available"}
 										</p>
 									</div>
 								</div>

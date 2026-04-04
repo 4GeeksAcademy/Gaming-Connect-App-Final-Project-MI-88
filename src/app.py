@@ -22,7 +22,7 @@ app.url_map.strict_slashes = False
 # Enable CORS for all routes
 CORS(app)
 
-# database condiguration
+# database configuration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
@@ -40,7 +40,7 @@ setup_admin(app)
 # add the admin
 setup_commands(app)
 
-# Add all endpoints form the API with a "api" prefix
+# Add all endpoints from the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
 
 @app.route('/api/hello', methods=['GET'])
@@ -49,13 +49,11 @@ def hello():
 
 # Handle/serialize errors like a JSON object
 
-
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
-
 
 @app.route('/')
 def sitemap():
