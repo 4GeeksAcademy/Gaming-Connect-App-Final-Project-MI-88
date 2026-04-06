@@ -16,10 +16,14 @@ export const Footer = () => (
         	</Link>
 		</p>
 		<p>
-			<a href="http://www.4geeksacademy.com">Contact Us</a>
+			<Link to={`/contactus/`}>
+          		Contact Us
+        	</Link>
 		</p>
 		<p>
-			<a href="http://www.4geeksacademy.com">Frequently Asked Questions</a>
+			<Link to={`/FAQ/`}>
+          		Frequently Asked Questions
+        	</Link>
 		</p>
 		<p>
 			<a href="http://www.4geeksacademy.com">1337 Gamersville, USA</a>
