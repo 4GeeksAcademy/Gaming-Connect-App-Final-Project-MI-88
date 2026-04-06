@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const Footer = () => (
 	<footer className="footer mt-auto py-3 text-center">
 
@@ -9,7 +11,9 @@ export const Footer = () => (
 		</h2>
 
 		<p>
-			<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">About Us</a>
+			<Link to={`/aboutus/`}>
+          		About Us
+        	</Link>
 		</p>
 		<p>
 			<a href="http://www.4geeksacademy.com">Contact Us</a>

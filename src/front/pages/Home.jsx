@@ -37,7 +37,7 @@ export const Home = () => {
 
 			<h1 className="display-2 m-4">Welcome to GuildUp!</h1>
 
-			<img src="https://cdn.discordapp.com/attachments/1170571402114498602/1489773408014041138/amazing_thumbs_up.png?ex=69d1a31b&is=69d0519b&hm=061b33dc276db7b2a02562835f2260f02d893a8b52f2be8e4eb133b376ca6bcc&"></img>
+			<img src="https://i.ibb.co/653LxPR/amazing-thumbs-up.png"></img>
 
 			<h3 className="m-4">Our Mission and What We Do:</h3>
 			<p>1. At GuildUp, we believe every gamer deserves a crew. We're breaking down the barriers that keep players apart by intelligently connecting gamers based on the games they love, the skills they've built, and the time they have to play. Because gaming is always better together!</p>
