@@ -2,7 +2,7 @@ import React from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const FAQ = () => {
-    const {store, dispatch} = useGlobalReducer
+    const { store, dispatch } = useGlobalReducer
 
     return (
         <>
