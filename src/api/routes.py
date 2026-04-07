@@ -18,28 +18,33 @@ CORS(api)
 
 @api.route('/signup', methods=['POST'])
 def handle_sign_up():
-    body = request.json
+    body = request.json or {}
+    email = (body.get("email") or "").strip()
+    password = body.get("password")
+    user_name = (body.get("user_name") or "").strip()
+    date_of_birth = (body.get("date_of_birth") or "").strip()
+
+    if not all([email, password, user_name, date_of_birth]):
+        return jsonify({"msg": "all fields required"}), 400
+
     potential_user = db.session.execute(
-        select(User).where(User.email == body["email"])
+        select(User).where(User.email == email)
     ).scalar_one_or_none()
     if potential_user is not None:
-        return jsonify({"msg": "User with that email already exists"})
+        return jsonify({"msg": "User with that email already exists"}), 400
 
-    # Creating a new user object
+    taken = db.session.execute(
+        select(User).where(User.user_name == user_name)
+    ).scalar_one_or_none()
+    if taken is not None:
+        return jsonify({"msg": "That username is taken"}), 400
+
     new_user = User()
-    new_user.email = body["email"]
-
-    # Underscores needed for body quotations?
-
-    new_user.first_name = body["first_name"]
-    new_user.last_name = body["last_name"]
-    new_user.date_of_birth = body["date_of_birth"]
-    new_user.user_name = body["user_name"]
-    new_user.password = body["password"]
+    new_user.email = email
+    new_user.password = password
+    new_user.user_name = user_name
+    new_user.date_of_birth = date_of_birth
     new_user.is_active = True
-
-    # Adding the user to the database while also saving the database
-
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"msg": "User successfully created"}), 201
@@ -47,13 +52,15 @@ def handle_sign_up():
 
 @api.route('/login', methods=['POST'])
 def create_token():
+def create_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
     user = User.query.filter_by(email=email, password=password).first()
 
-    if User is None:
+    if user is None:
         return jsonify({"msg": "Bad email or password"}), 401
+
 
     access_token = create_access_token(identity=str(user.id))
     return jsonify({"token": access_token, "user_id": user.id, "email": user.email})

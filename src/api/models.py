@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
