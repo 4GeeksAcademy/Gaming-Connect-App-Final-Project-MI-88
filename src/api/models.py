@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
+import json
 
 db = SQLAlchemy()
 
@@ -9,11 +10,80 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+    first_name: Mapped[str] = mapped_column(String(120), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=True)
+    user_name: Mapped[str] = mapped_column(String(120), unique=True, nullable=True)
+    date_of_birth: Mapped[str] = mapped_column(String(120), nullable=True)
+    profile_picture_url: Mapped[str] = mapped_column(String(255), nullable=True)
+    favorites: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
+    friends: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
 
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "user_name": self.user_name,
+            "date_of_birth": self.date_of_birth,
+            "profile_picture_url": self.profile_picture_url,
+            "favorites": json.loads(self.favorites) if self.favorites else [],
+            "friends": json.loads(self.friends) if self.friends else [],
             # do not serialize the password, its a security breach
         }
+    
+    def add_favorite(self, game_data):
+        """Add a game to user's favorites with skill level."""
+        try:
+            favorites = json.loads(self.favorites) if self.favorites else []
+            game_entry = {
+                "id": game_data.get("id"),
+                "name": game_data.get("name"),
+                "cover": game_data.get("cover"),
+                "first_release_date": game_data.get("first_release_date"),
+                "total_rating": game_data.get("total_rating"),
+                "skill_level": game_data.get("skill_level", 1)
+            }
+            favorites.append(game_entry)
+            self.favorites = json.dumps(favorites)
+        except Exception as e:
+            print(f"Error adding favorite: {e}")
+    
+    def remove_favorite(self, game_id):
+        """Remove a game from user's favorites."""
+        try:
+            favorites = json.loads(self.favorites) if self.favorites else []
+            self.favorites = json.dumps([g for g in favorites if g.get("id") != game_id])
+        except Exception as e:
+            print(f"Error removing favorite: {e}")
+    
+    def update_favorite_skill_level(self, game_id, skill_level):
+        """Update skill level for a favorite game."""
+        try:
+            favorites = json.loads(self.favorites) if self.favorites else []
+            for game in favorites:
+                if game.get("id") == game_id:
+                    game["skill_level"] = skill_level
+                    break
+            self.favorites = json.dumps(favorites)
+        except Exception as e:
+            print(f"Error updating skill level: {e}")
+    
+    def add_friend(self, friend_id):
+        """Add a friend."""
+        try:
+            friends = json.loads(self.friends) if self.friends else []
+            if friend_id not in friends:
+                friends.append(friend_id)
+                self.friends = json.dumps(friends)
+        except Exception as e:
+            print(f"Error adding friend: {e}")
+    
+    def remove_friend(self, friend_id):
+        """Remove a friend."""
+        try:
+            friends = json.loads(self.friends) if self.friends else []
+            self.friends = json.dumps([f for f in friends if f != friend_id])
+        except Exception as e:
+            print(f"Error removing friend: {e}")
