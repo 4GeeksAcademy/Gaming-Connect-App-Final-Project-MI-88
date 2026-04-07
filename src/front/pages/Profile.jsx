@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx"
 import useActions from "../hooks/useActions.jsx"
 import { GameCard } from "../components/GameCard.jsx"
@@ -7,6 +8,7 @@ import { GameSearchBar } from "../components/GameSearchBar.jsx"
 export const Profile = () => {
 	const { store, dispatch } = useGlobalReducer()
 	const { postToIGDB } = useActions()
+	const navigate = useNavigate()
 
 	const [userProfile, setUserProfile] = useState(null)
 	const [isLoading, setIsLoading] = useState(true)
@@ -17,24 +19,28 @@ export const Profile = () => {
 	const [friends, setFriends] = useState([])
 	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
 
-	// Fetch user profile on component mount
+	// Check authentication on component mount
 	useEffect(() => {
+		const token = localStorage.getItem("token")
+		if (!token) {
+			navigate("/login")
+			return
+		}
+
 		fetchUserProfile()
 		fetchFriends()
-	}, [])
-
+	}, [navigate])
 	const fetchUserProfile = async () => {
 		setIsLoading(true)
 		try {
 			const token = localStorage.getItem("token")
 			if (!token) {
-				console.error("No token found")
-				setIsLoading(false)
+				navigate("/login")
 				return
 			}
 
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
-			const response = await fetch(`${backendUrl}/profile`, {
+			const response = await fetch(`${backendUrl}/api/profile`, {
 				method: "GET",
 				headers: {
 					"Accept": "application/json",
@@ -51,11 +57,18 @@ export const Profile = () => {
 					first_name: data.first_name || "",
 					last_name: data.last_name || ""
 				})
+			} else if (response.status === 401) {
+				// Token is invalid or expired
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
 			} else {
 				console.error("Failed to fetch profile:", data)
+				setUploadError("Failed to load profile. Please try again.")
 			}
 		} catch (error) {
 			console.error("Error fetching profile:", error)
+			setUploadError("Network error. Please check your connection.")
 		} finally {
 			setIsLoading(false)
 		}
@@ -68,7 +81,7 @@ export const Profile = () => {
 			if (!token) return
 
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
-			const response = await fetch(`${backendUrl}/profile/friends`, {
+			const response = await fetch(`${backendUrl}/api/profile/friends`, {
 				method: "GET",
 				headers: {
 					"Accept": "application/json",
@@ -81,6 +94,13 @@ export const Profile = () => {
 
 			if (response.ok) {
 				setFriends(data)
+			} else if (response.status === 401) {
+				// Token is invalid or expired
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				console.error("Error fetching friends:", data)
 			}
 		} catch (error) {
 			console.error("Error fetching friends:", error)
@@ -95,7 +115,7 @@ export const Profile = () => {
 			const token = localStorage.getItem("token")
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-			const response = await fetch(`${backendUrl}/profile`, {
+			const response = await fetch(`${backendUrl}/api/profile`, {
 				method: "PUT",
 				headers: {
 					"Accept": "application/json",
@@ -112,6 +132,10 @@ export const Profile = () => {
 				setIsEditingProfile(false)
 				setSuccessMessage("Profile updated successfully!")
 				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
 			} else {
 				setUploadError(data.error || "Failed to update profile")
 			}
@@ -134,7 +158,7 @@ export const Profile = () => {
 				const token = localStorage.getItem("token")
 				const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-				const response = await fetch(`${backendUrl}/profile`, {
+				const response = await fetch(`${backendUrl}/api/profile`, {
 					method: "PUT",
 					headers: {
 						"Accept": "application/json",
@@ -168,7 +192,7 @@ export const Profile = () => {
 			const token = localStorage.getItem("token")
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-			const response = await fetch(`${backendUrl}/profile/favorites`, {
+			const response = await fetch(`${backendUrl}/api/profile/favorites`, {
 				method: "POST",
 				headers: {
 					"Accept": "application/json",
@@ -187,6 +211,10 @@ export const Profile = () => {
 				})
 				setSuccessMessage(`${gameData.name} added to favorites!`)
 				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
 			} else {
 				setUploadError(data.error || "Failed to add game to favorites")
 			}
@@ -201,7 +229,7 @@ export const Profile = () => {
 			const token = localStorage.getItem("token")
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-			const response = await fetch(`${backendUrl}/profile/favorites/${gameId}`, {
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}`, {
 				method: "DELETE",
 				headers: {
 					"Accept": "application/json",
@@ -219,6 +247,10 @@ export const Profile = () => {
 				})
 				setSuccessMessage("Game removed from favorites")
 				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
 			} else {
 				setUploadError(data.error || "Failed to remove game")
 			}
@@ -233,7 +265,7 @@ export const Profile = () => {
 			const token = localStorage.getItem("token")
 			const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-			const response = await fetch(`${backendUrl}/profile/favorites/${gameId}/skill`, {
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}/skill`, {
 				method: "PATCH",
 				headers: {
 					"Accept": "application/json",
@@ -252,6 +284,10 @@ export const Profile = () => {
 				})
 				setSuccessMessage("Skill level updated!")
 				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
 			} else {
 				setUploadError(data.error || "Failed to update skill level")
 			}
