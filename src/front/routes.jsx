@@ -15,6 +15,7 @@ import { FAQ } from "./pages/FAQ";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { ProfileSettings } from "./pages/ProfileSettings";
+import { Home } from "./pages/Home";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -37,7 +38,7 @@ export const router = createBrowserRouter(
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/faq" element={<FAQ />} />
-        <Route path="/profile" element={<ProfileSettings />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
       </Route>
     ),
     {
