@@ -8,7 +8,7 @@ const useActions = () => {
             }
 
             // Send request to backend proxy
-            const response = await fetch(`${backendUrl}/games`, {
+            const response = await fetch(`${backendUrl}/api/games`, {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",
