@@ -1,0 +1,604 @@
+/* Profile Page Styles */
+
+.profile-container {
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Left Column - Profile Info and Search */
+.profile-left {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profile-header {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-picture-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #667eea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  color: #667eea;
+}
+
+.picture-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-info {
+  text-align: center;
+}
+
+.gamertag {
+  color: #333;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 15px 0 5px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #667eea;
+}
+
+.user-email {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.user-details {
+  margin: 15px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.edit-profile-form {
+  margin-top: 20px;
+  text-align: left;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.edit-profile-form .form-group {
+  margin-bottom: 15px;
+}
+
+.edit-profile-form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.search-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Game Search Bar Styles */
+.game-search-bar {
+  width: 100%;
+}
+
+.search-input-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.search-btn:hover:not(:disabled) {
+  background: #764ba2;
+}
+
+.search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.search-results {
+  margin-top: 20px;
+}
+
+.search-results h4 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.search-result-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.search-result-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.result-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.result-body {
+  padding: 12px;
+}
+
+.result-body h6 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rating {
+  font-size: 0.85rem;
+  color: #ff9800;
+  margin: 5px 0;
+}
+
+.skill-select {
+  margin: 10px 0;
+}
+
+.skill-select label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 3px;
+  color: #555;
+}
+
+.skill-select .form-select {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+
+.search-result-item .btn {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Right Column - Favorites and Friends */
+.profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.favorites-section,
+.friends-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.favorites-section h2,
+.friends-section h2 {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #667eea;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 30px 0;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* Game Card Styles */
+.game-card {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.game-card-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #e0e0e0;
+}
+
+.game-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-card-body {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-card-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 5px 0;
+}
+
+.skill-level-section {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+  margin-top: 12px;
+}
+
+.skill-level-section label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.skill-level-input {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.skill-level-input input {
+  flex: 0 0 50px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.skill-level-input .btn {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 5px 8px;
+}
+
+.game-card .btn {
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+/* Friends List Styles */
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: background 0.3s;
+}
+
+.friend-item:hover {
+  background: #e8eef5;
+}
+
+.friend-info h5 {
+  margin: 0 0 5px;
+  color: #333;
+  font-weight: 600;
+}
+
+.friend-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.friend-item .btn {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+}
+
+/* Profile Loading State */
+.profile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 20px;
+}
+
+.profile-loading .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: #667eea;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 10px;
+  }
+
+  .profile-header {
+    padding: 20px;
+  }
+
+  .gamertag {
+    font-size: 1.8rem;
+  }
+
+  .search-input-group {
+    grid-template-columns: 1fr;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+  }
+
+  .favorites-grid,
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .friend-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .friend-item .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .gamertag {
+    font-size: 1.5rem;
+  }
+
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+  }
+
+  .favorites-grid,
+  .search-results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .edit-profile-form {
+    padding: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group .btn {
+    width: 100%;
+  }
+}
+
+/* Success and Error Message Styles */
+.alert-success,
+.alert-danger {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button Variations */
+.btn-primary {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.btn-primary:hover {
+  background: #764ba2;
+  border-color: #764ba2;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+  border-color: #5a6268;
+}
+
+.btn-success {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background: #218838;
+  border-color: #218838;
+}
+
+.btn-outline-primary {
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.btn-outline-primary:hover {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+  background: #dc3545;
+  border-color: #dc3545;
+}
