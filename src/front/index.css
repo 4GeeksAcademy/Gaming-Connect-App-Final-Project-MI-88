@@ -1,4 +1,6 @@
-/* Profile Page Styles */
+a {
+  text-decoration: none;
+}/* Profile Page Styles */
 
 .profile-container {
   padding: 20px;
