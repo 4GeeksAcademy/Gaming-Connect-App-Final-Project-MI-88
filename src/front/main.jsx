@@ -25,5 +25,11 @@ const Main = () => {
     );
 }
 
+// Create the root only once
+const container = document.getElementById('root');
+if (!container._reactRoot) {
+    container._reactRoot = ReactDOM.createRoot(container);
+}
+
 // Render the Main component into the root DOM element.
-ReactDOM.createRoot(document.getElementById('root')).render(<Main />)
+container._reactRoot.render(<Main />);
