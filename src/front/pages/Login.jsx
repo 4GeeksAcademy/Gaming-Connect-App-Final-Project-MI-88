@@ -35,7 +35,7 @@ export const Login = () => {
 			if (data.token) localStorage.setItem("token", data.token);
 			if (data.user_name) localStorage.setItem("user_name", data.user_name);
 
-			navigate("/");
+			navigate("/home");
 		} catch {
 			setNote("fetch failed, is the backend running?");
 		}
