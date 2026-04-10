@@ -1,11 +1,27 @@
 from typing import Optional
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, Text
+from sqlalchemy import String, Boolean, Text, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 import json
 
 db = SQLAlchemy()
+
+
+class FriendRequest(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
+    receiver_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default='pending')
+    # status values: 'pending', 'accepted', 'declined'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "sender_id": self.sender_id,
+            "receiver_id": self.receiver_id,
+            "status": self.status
+        }
 
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)

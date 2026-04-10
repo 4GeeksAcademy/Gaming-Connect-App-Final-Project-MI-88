@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Signup = () => {
 	const [note, setNote] = useState("");
+	const navigate = useNavigate();
 
 	const signupSubmit = async (e) => {
 		e.preventDefault();
@@ -35,7 +36,11 @@ export const Signup = () => {
 				return;
 			}
 
-			setNote(data.msg || "created — you can sign in now");
+			// Auto-login after successful signup
+			if (data.token) localStorage.setItem("token", data.token);
+			if (data.user_name) localStorage.setItem("user_name", data.user_name);
+
+			navigate("/home");
 		} catch {
 			setNote("fetch failed, is the backend running?");
 		}
