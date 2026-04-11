@@ -155,6 +155,8 @@ def update_profile():
             user.last_name = data["last_name"]
         if "profile_picture_url" in data:
             user.profile_picture_url = data["profile_picture_url"]
+        if "availability" in data:
+            user.availability = data["availability"]
         
         db.session.commit()
         return jsonify(user.serialize()), 200

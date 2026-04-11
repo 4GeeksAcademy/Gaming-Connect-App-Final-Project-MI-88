@@ -4,6 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer.jsx"
 import useActions from "../hooks/useActions.jsx"
 import { GameCard } from "../components/GameCard.jsx"
 import { GameSearchBar } from "../components/GameSearchBar.jsx"
+import { AvailabilityDay } from "../components/AvailabilityDay.jsx"
 
 export const Profile = () => {
 	const { store, dispatch } = useGlobalReducer()
@@ -18,6 +19,57 @@ export const Profile = () => {
 	const [successMessage, setSuccessMessage] = useState("")
 	const [friends, setFriends] = useState([])
 	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
+	const [availableDays, setAvailableDays] = useState({
+		monday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		tuesday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		wednesday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		thursday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		friday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		saturday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		},
+		sunday: {
+			isAvailable: false,
+			timeAvailable: {
+				start: null,
+				end: null
+			}
+		}
+	})
 
 	// Check authentication on component mount
 	useEffect(() => {
@@ -55,7 +107,8 @@ export const Profile = () => {
 				setUserProfile(data)
 				setEditFormData({
 					first_name: data.first_name || "",
-					last_name: data.last_name || ""
+					last_name: data.last_name || "",
+					availability: data.availability || ""
 				})
 			} else if (response.status === 401) {
 				// Token is invalid or expired
@@ -405,6 +458,15 @@ export const Profile = () => {
 											})}
 										/>
 									</div>
+									<label>Availability:</label>
+										<AvailabilityDay day={"Sunday"} />
+										<AvailabilityDay day={"Monday"} />
+										<AvailabilityDay day={"Tuesday"} />
+										<AvailabilityDay day={"Wednesday"} />
+										<AvailabilityDay day={"Thursday"} />
+										<AvailabilityDay day={"Friday"} />
+										<AvailabilityDay day={"Saturday"} />
+								
 									<div className="button-group">
 										<button type="submit" className="btn btn-primary btn-sm">
 											Save Changes
