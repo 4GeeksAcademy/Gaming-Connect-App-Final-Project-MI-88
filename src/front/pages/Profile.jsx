@@ -19,6 +19,7 @@ export const Profile = () => {
 	const [successMessage, setSuccessMessage] = useState("")
 	const [friends, setFriends] = useState([])
 	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
+	const [pendingRequests, setPendingRequests] = useState([])
 	const [availableDays, setAvailableDays] = useState({
 		monday: {
 			isAvailable: false,
@@ -81,6 +82,7 @@ export const Profile = () => {
 
 		fetchUserProfile()
 		fetchFriends()
+		fetchPendingRequests()
 	}, [navigate])
 	const fetchUserProfile = async () => {
 		setIsLoading(true)
@@ -159,6 +161,52 @@ export const Profile = () => {
 			console.error("Error fetching friends:", error)
 		} finally {
 			setIsLoadingFriends(false)
+		}
+	}
+
+	const fetchPendingRequests = async () => {
+		try {
+			const token = localStorage.getItem("token")
+			if (!token) return
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/friend-requests`, {
+				headers: { "Authorization": `Bearer ${token}` }
+			})
+			const data = await response.json()
+			if (response.ok) setPendingRequests(data)
+		} catch (error) {
+			console.error("Error fetching friend requests:", error)
+		}
+	}
+
+	const handleRespondToRequest = async (requestId, action) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/friend-requests/${requestId}`, {
+				method: "PATCH",
+				headers: {
+					"Authorization": `Bearer ${token}`,
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ status: action })
+			})
+			const data = await response.json()
+			if (response.ok) {
+				setPendingRequests(prev => prev.filter(r => r.id !== requestId))
+				if (action === "accepted") {
+					setSuccessMessage(`You are now friends!`)
+					fetchFriends()
+				} else {
+					setSuccessMessage("Request declined.")
+				}
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else {
+				setUploadError(data.error || "Failed to respond to request")
+			}
+		} catch (error) {
+			console.error("Error responding to request:", error)
+			setUploadError("Network error")
 		}
 	}
 
@@ -511,6 +559,37 @@ export const Profile = () => {
 							<p className="empty-message">No favorite games yet. Search and add some games!</p>
 						)}
 					</div>
+
+					{/* Pending Friend Requests Section */}
+					{pendingRequests.length > 0 && (
+						<div className="friends-section mb-4">
+							<h2>Friend Requests ({pendingRequests.length})</h2>
+							<div className="friends-list">
+								{pendingRequests.map((req) => (
+									<div key={req.id} className="friend-item">
+										<div className="friend-info">
+											<h5>{req.sender_username}</h5>
+											<p className="text-muted small">wants to connect with you</p>
+										</div>
+										<div className="d-flex gap-2">
+											<button
+												className="btn btn-sm btn-primary"
+												onClick={() => handleRespondToRequest(req.id, "accepted")}
+											>
+												Accept
+											</button>
+											<button
+												className="btn btn-sm btn-outline-danger"
+												onClick={() => handleRespondToRequest(req.id, "declined")}
+											>
+												Decline
+											</button>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 
 					{/* Friends Section */}
 					<div className="friends-section">
