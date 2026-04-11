@@ -110,8 +110,8 @@ class User(db.Model):
 class Availability(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     day: Mapped[str] = mapped_column(String(10))
-    start_time: Mapped[str] = mapped_column(String(10))
-    end_time: Mapped[str] = mapped_column(String(10))
+    start_time: Mapped[str] = mapped_column(String(10),nullable=True)
+    end_time: Mapped[str] = mapped_column(String(10),nullable=True)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="availability")
@@ -122,5 +122,4 @@ class Availability(db.Model):
             "day": self.day,
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "user": self.user.serialize()
         }

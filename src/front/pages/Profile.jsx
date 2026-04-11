@@ -20,57 +20,7 @@ export const Profile = () => {
 	const [friends, setFriends] = useState([])
 	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
 	const [pendingRequests, setPendingRequests] = useState([])
-	const [availableDays, setAvailableDays] = useState({
-		monday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		tuesday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		wednesday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		thursday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		friday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		saturday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		},
-		sunday: {
-			isAvailable: false,
-			timeAvailable: {
-				start: null,
-				end: null
-			}
-		}
-	})
+	const [availableDays, setAvailableDays] = useState([])
 
 	// Check authentication on component mount
 	useEffect(() => {
@@ -112,6 +62,7 @@ export const Profile = () => {
 					last_name: data.last_name || "",
 					availability: data.availability || ""
 				})
+				setAvailableDays(data.availability)
 			} else if (response.status === 401) {
 				// Token is invalid or expired
 				localStorage.removeItem("token")
@@ -507,6 +458,7 @@ export const Profile = () => {
 										/>
 									</div>
 									<label>Availability:</label>
+									<div>
 										<AvailabilityDay day={"Sunday"} />
 										<AvailabilityDay day={"Monday"} />
 										<AvailabilityDay day={"Tuesday"} />
@@ -514,7 +466,7 @@ export const Profile = () => {
 										<AvailabilityDay day={"Thursday"} />
 										<AvailabilityDay day={"Friday"} />
 										<AvailabilityDay day={"Saturday"} />
-								
+									</div>
 									<div className="button-group">
 										<button type="submit" className="btn btn-primary btn-sm">
 											Save Changes
