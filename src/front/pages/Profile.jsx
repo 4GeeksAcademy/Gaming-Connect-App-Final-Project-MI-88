@@ -4,6 +4,8 @@ import useGlobalReducer from "../hooks/useGlobalReducer.jsx"
 import useActions from "../hooks/useActions.jsx"
 import { GameCard } from "../components/GameCard.jsx"
 import { GameSearchBar } from "../components/GameSearchBar.jsx"
+import { AvailabilityDay } from "../components/AvailabilityDay.jsx"
+import { array } from "prop-types"
 
 export const Profile = () => {
 	const { store, dispatch } = useGlobalReducer()
@@ -19,6 +21,17 @@ export const Profile = () => {
 	const [friends, setFriends] = useState([])
 	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
 	const [pendingRequests, setPendingRequests] = useState([])
+	const [availableDays, setAvailableDays] = useState([])
+	const [availableDaysData, setAvailableDaysData] = useState({
+		Sunday: {isAvailable: false, start: "", end: "" },
+		Monday: {isAvailable: false, start: "", end: "" },
+		Tuesday: {isAvailable: false, start: "", end: "" },
+		Wednesday: {isAvailable: false, start: "", end: "" },
+		Thursday: {isAvailable: false, start: "", end: "" },
+		Friday: {isAvailable: false, start: "", end: "" },
+		Saturday: {isAvailable: false, start: "", end: "" }
+	})
+	const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 	// Check authentication on component mount
 	useEffect(() => {
@@ -57,8 +70,22 @@ export const Profile = () => {
 				setUserProfile(data)
 				setEditFormData({
 					first_name: data.first_name || "",
-					last_name: data.last_name || ""
+					last_name: data.last_name || "",
+					availability: data.availability || ""
 				})
+				setAvailableDays(data.availability)
+				if (data.availability && Array.isArray(data.availability)) {
+					const formatted =  {}
+					days.forEach(day => {
+						const match = data.availability.find(a => a.day === day.toLowerCase())
+						formatted[day] = {
+							isAvailable: !!(match?.start_time && match?.end_time),
+							start: match?.start_time || "",
+							end: match?.end_time || ""
+						}
+					})
+					setAvailableDaysData(formatted)
+				}
 			} else if (response.status === 401) {
 				// Token is invalid or expired
 				localStorage.removeItem("token")
@@ -157,6 +184,27 @@ export const Profile = () => {
 		}
 	}
 
+	const formatTime = (val) => {
+		const num = parseInt(val)
+		if (isNaN(num)) return ""
+		if (num === 0) return "12:00am"
+		if (num === 24) return "11:59pm"
+		if (num < 12) return `${num}:00am`
+		if (num === 12) return "12:00pm"
+		return `${num - 12}:00pm`
+	}
+
+	const handleAvailabilityDayChange = (day, dayData) => {
+		const updated = { ...availableDaysData, [day]: dayData }
+		setAvailableDaysData(updated)
+
+		const asArray = Object.entries(updated)
+		.filter(([_, v]) => v.isAvailable)
+		.map(([d, v]) => ({ day: d.toLowerCase(), start: v.start, end: v.end}))
+
+		setEditFormData(prev => ({ ...prev, availability: asArray }))
+	}
+
 	const handleProfileUpdate = async (e) => {
 		e.preventDefault()
 		try {
@@ -177,6 +225,18 @@ export const Profile = () => {
 
 			if (response.ok) {
 				setUserProfile(data)
+				if (data.availability && Array.isArray(data.availability)) {
+					const formatted = {}
+					days.forEach(day => {
+						const match = data.availability.find(a => a.day === day.toLowerCase())
+						formatted[day] = {
+							isAvailable: !!(match?.start_time && match.end_time),
+							start: match?.start_time || "",
+							end: match?.end_time || ""
+						}
+					})
+					setAvailableDays(formatted)
+				}
 				setIsEditingProfile(false)
 				setSuccessMessage("Profile updated successfully!")
 				setTimeout(() => setSuccessMessage(""), 3000)
@@ -416,6 +476,18 @@ export const Profile = () => {
 								{userProfile.first_name && (
 									<p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
 								)}
+								{userProfile.availability && userProfile.availability.some(a => a.start_time && a.end_time) && (
+									<div>
+										<strong>Availability:</strong>
+										{userProfile.availability
+										.filter(a => a.start_time && a.end_time)
+										.map(a => (
+											<p key={a.id}>
+												{a.day.charAt(0).toUpperCase() + a.day.slice(1)}: {formatTime(a.start_time)} - {formatTime(a.end_time)}
+											</p>
+										))}
+									</div>
+								)}
 							</div>
 
 							{!isEditingProfile ? (
@@ -452,6 +524,19 @@ export const Profile = () => {
 												last_name: e.target.value
 											})}
 										/>
+									</div>
+									<label>Availability:</label>
+									<div>
+										{["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => (
+											<AvailabilityDay
+												key={day}
+												day={day}
+												isAvailable={availableDaysData[day]?.isAvailable || false}
+												start={availableDaysData[day]?.start || ""}
+												end={availableDaysData[day]?.end || ""}
+												onChange={handleAvailabilityDayChange}
+												/>
+										))}
 									</div>
 									<div className="button-group">
 										<button type="submit" className="btn btn-primary btn-sm">

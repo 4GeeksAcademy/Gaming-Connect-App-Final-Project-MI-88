@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, FriendRequest
+from api.models import db, User, FriendRequest, Availability
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -42,6 +42,7 @@ def handle_sign_up():
     ).scalar_one_or_none()
     if taken is not None:
         return jsonify({"msg": "That username is taken"}), 400
+    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
     new_user = User()
     new_user.email = email
@@ -50,6 +51,15 @@ def handle_sign_up():
     new_user.date_of_birth = date_of_birth
     new_user.is_active = True
     db.session.add(new_user)
+    db.session.commit()
+    print(new_user.id)
+    for day in days: 
+        new_day = Availability()
+        new_day.day = day
+        new_day.start_time = None
+        new_day.end_time = None
+        new_day.user_id = new_user.id
+        db.session.add(new_day)
     db.session.commit()
 
     # Auto-login after signup
@@ -167,7 +177,14 @@ def update_profile():
             user.last_name = data["last_name"]
         if "profile_picture_url" in data:
             user.profile_picture_url = data["profile_picture_url"]
-
+        if "availability" in data:
+            for day_data in data["availability"]:
+                day_name = day_data.get("day", "").lower()
+                available_row = next((a for a in user.availability if a.day == day_name), None)
+                if available_row:
+                    available_row.start_time = day_data.get("start")
+                    available_row.end_time = day_data.get("end")
+        
         db.session.commit()
         return jsonify(user.serialize()), 200
     except Exception as e:

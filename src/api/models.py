@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, List
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Text, Integer, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import json
 
 db = SQLAlchemy()
@@ -35,7 +35,7 @@ class User(db.Model):
     profile_picture_url: Mapped[str] = mapped_column(String(255), nullable=True)
     favorites: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
     friends: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
-
+    availability: Mapped[List["Availability"]] = relationship(back_populates="user")
 
     def serialize(self):
         return {
@@ -46,6 +46,7 @@ class User(db.Model):
             "user_name": self.user_name,
             "date_of_birth": self.date_of_birth,
             "profile_picture_url": self.profile_picture_url,
+            "availability": [day.serialize() for day in self.availability],
             "favorites": json.loads(self.favorites) if self.favorites else [],
             "friends": json.loads(self.friends) if self.friends else [],
             # do not serialize the password, its a security breach
@@ -105,3 +106,20 @@ class User(db.Model):
             self.friends = json.dumps([f for f in friends if f != friend_id])
         except Exception as e:
             print(f"Error removing friend: {e}")
+
+class Availability(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    day: Mapped[str] = mapped_column(String(10))
+    start_time: Mapped[str] = mapped_column(String(10),nullable=True)
+    end_time: Mapped[str] = mapped_column(String(10),nullable=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user: Mapped["User"] = relationship(back_populates="availability")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "day": self.day,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+        }
