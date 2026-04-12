@@ -178,7 +178,12 @@ def update_profile():
         if "profile_picture_url" in data:
             user.profile_picture_url = data["profile_picture_url"]
         if "availability" in data:
-            user.availability = data["availability"]
+            for day_data in data["availability"]:
+                day_name = day_data.get("day", "").lower()
+                available_row = next((a for a in user.availability if a.day == day_name), None)
+                if available_row:
+                    available_row.start_time = day_data.get("start")
+                    available_row.end_time = day_data.get("end")
         
         db.session.commit()
         return jsonify(user.serialize()), 200

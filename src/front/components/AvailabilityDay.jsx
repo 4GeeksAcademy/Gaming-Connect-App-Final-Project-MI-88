@@ -1,83 +1,78 @@
 import React from "react"
+import { isValidElement } from "react"
 import { useState } from "react"
 
-export const AvailabilityDay = (day) => {
-    const [availability, setAvailability] = useState({
-        isAvailable: false,
-        timeAvailable: {
-            start: null,
-            end: null
-        }
-    })
+const available_time_options = [
+    { value: "", label: "Select a Time" },
+    {value: "0", label: "12:00am"},
+    {value: "1", label: "1:00am"},
+    {value: "2", label: "2:00am"},
+    {value: "3", label: "3:00am"},
+    {value: "4", label: "4:00am"},
+    {value: "5", label: "5:00am"},
+    {value: "6", label: "6:00am"},
+    {value: "7", label: "7:00am"},
+    {value: "8", label: "8:00am"},
+    {value: "9", label: "9:00am"},
+    {value: "10", label: "10:00am"},
+    {value: "11", label: "11:00am"},
+    {value: "12", label: "12:00pm"},
+    {value: "13", label: "1:00pm"},
+    {value: "14", label: "2:00pm"},
+    {value: "15", label: "3:00pm"},
+    {value: "16", label: "4:00pm"},
+    {value: "17", label: "5:00pm"},
+    {value: "18", label: "6:00pm"},
+    {value: "19", label: "7:00pm"},
+    {value: "20", label: "8:00pm"},
+    {value: "21", label: "9:00pm"},
+    {value: "22", label: "10:00pm"},
+    {value: "23", label: "11:00pm"},
+    {value: "24", label: "11:59pm"},
+]
 
+export const AvailabilityDay = ({day, isAvailable, start, end, onChange}) => {
+
+    const handleDayCheckbox = () => {
+        onChange(day, { isAvailable: !isAvailable, start: start || "", end: end || "" })
+    }
+
+    const handleStartTime = (e) => {
+        onChange(day, { isAvailable, start: e.target.value, end })
+    }
+
+    const handleEndTime = (e) => {
+        onChange(day, { isAvailable, start, end: e.target.value })
+    }
+    
     return (
         <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="dayCheck" value={availability.isAvailable} onChange={() => setAvailability({ ...availability, isAvailable: !availability.isAvailable })} />
-            <label className="form-check-label" for="gridCheck">
-                {day.day}
+            <input 
+                className="form-check-input"
+                type="checkbox"
+                id={`check-${day}`}
+                checked={isAvailable}
+                onChange={handleDayCheckbox}
+                />
+            <label className="form-check-label" htmlFor={`check-${day}`}>
+                {day}
             </label>
-            {availability.isAvailable ? <div>
-                <label className="pe-1 small">From</label>
-                <select className="form-select" aria-label="Select Start Time">
-                    <option selected>Select Start Time</option>
-                    <option value="0">12:00am</option>
-                    <option value="1">1:00am</option>
-                    <option value="2">2:00am</option>
-                    <option value="3">3:00am</option>
-                    <option value="4">4:00am</option>
-                    <option value="5">5:00am</option>
-                    <option value="6">6:00am</option>
-                    <option value="7">7:00am</option>
-                    <option value="8">8:00am</option>
-                    <option value="9">9:00am</option>
-                    <option value="10">10:00am</option>
-                    <option value="11">11:00am</option>
-                    <option value="12">12:00pm</option>
-                    <option value="13">1:00pm</option>
-                    <option value="14">2:00pm</option>
-                    <option value="15">3:00pm</option>
-                    <option value="16">4:00pm</option>
-                    <option value="17">5:00pm</option>
-                    <option value="18">6:00pm</option>
-                    <option value="19">7:00pm</option>
-                    <option value="20">8:00pm</option>
-                    <option value="21">9:00pm</option>
-                    <option value="22">10:00pm</option>
-                    <option value="23">11:00pm</option>
-                    <option value="24">11:59pm</option>
-                </select>
-                {/* <input type="text" value={availability.timeAvailable.start} onChange={(e) => setAvailability({ ...availability, day: { ...availability, timeAvailable: { ...availability.timeAvailable, start: e.target.value } } })} /> */}
-                <label className="pe-1 ps-1 small">To</label>
-                <select className="form-select" aria-label="Select End Time">
-                    <option selected>Select End Time</option>
-                    <option value="1">12:00am</option>
-                    <option value="2">1:00am</option>
-                    <option value="3">2:00am</option>
-                    <option value="4">3:00am</option>
-                    <option value="5">4:00am</option>
-                    <option value="6">5:00am</option>
-                    <option value="7">6:00am</option>
-                    <option value="8">7:00am</option>
-                    <option value="9">8:00am</option>
-                    <option value="10">9:00am</option>
-                    <option value="11">10:00am</option>
-                    <option value="12">11:00am</option>
-                    <option value="13">12:00pm</option>
-                    <option value="14">1:00pm</option>
-                    <option value="15">2:00pm</option>
-                    <option value="16">3:00pm</option>
-                    <option value="17">4:00pm</option>
-                    <option value="18">5:00pm</option>
-                    <option value="19">6:00pm</option>
-                    <option value="20">7:00pm</option>
-                    <option value="21">8:00pm</option>
-                    <option value="22">9:00pm</option>
-                    <option value="23">10:00pm</option>
-                    <option value="24">11:00pm</option>
-                    <option value="25">11:59pm</option>
-                </select>
-                {/* <input type="text" value={availability.timeAvailable.end} onChange={(e) => setAvailability({ ...availability, day: { ...availability, timeAvailable: { ...availability.timeAvailable, end: e.target.value } } })} /> */}
-            </div> : null}
+            {isAvailable && (
+                <div>
+                    <label className="pe-1 small">From</label>
+                    <select className="form-select" value={start || ""} onChange={handleStartTime}>
+                        {available_time_options.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                    <label className="pe-1 ps-1 small">To</label>
+                    <select className="form-select" value={end || ""} onChange={handleEndTime}>
+                        {available_time_options.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
         </div>
     )
 }
