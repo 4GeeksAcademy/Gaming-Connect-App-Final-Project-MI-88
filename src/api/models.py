@@ -32,7 +32,7 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(120), nullable=True)
     user_name: Mapped[str] = mapped_column(String(120), unique=True, nullable=True)
     date_of_birth: Mapped[str] = mapped_column(String(120), nullable=True)
-    profile_picture_url: Mapped[str] = mapped_column(String(255), nullable=True)
+    profile_picture_url: Mapped[str] = mapped_column(Text, nullable=True)
     favorites: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
     friends: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
     availability: Mapped[List["Availability"]] = relationship(back_populates="user")

@@ -636,15 +636,20 @@ export const Profile = () => {
 						{friends.length > 0 ? (
 							<div className="friends-list">
 								{friends.map((friend) => (
-									<div key={friend.id} className="friend-item">
+									<div
+										key={friend.id}
+										className="friend-item"
+										style={{ cursor: "pointer" }}
+										onClick={() => navigate(`/profile/${friend.id}`)}
+									>
 										<div className="friend-info">
 											<h5>{friend.user_name}</h5>
 											<p>{friend.email}</p>
 										</div>
 										<button
 											className="btn btn-sm btn-outline-danger"
-											onClick={() => {
-												// Handle remove friend
+											onClick={(e) => {
+												e.stopPropagation()
 												console.log("Remove friend:", friend.id)
 											}}
 										>
