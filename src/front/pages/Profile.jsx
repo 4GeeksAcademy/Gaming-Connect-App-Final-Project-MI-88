@@ -199,8 +199,8 @@ export const Profile = () => {
 		setAvailableDaysData(updated)
 
 		const asArray = Object.entries(updated)
-			.filter(([_, v]) => v.isAvailable)
-			.map(([d, v]) => ({ day: d.toLowerCase(), start: v.start, end: v.end }))
+			.filter(([_, dayValue]) => dayValue.isAvailable)
+			.map(([dayName, dayValue]) => ({ day: dayName.toLowerCase(), start: dayValue.start, end: dayValue.end }))
 
 		setEditFormData(prev => ({ ...prev, availability: asArray }))
 	}
@@ -227,10 +227,10 @@ export const Profile = () => {
 				setUserProfile(data)
 				if (data.availability && Array.isArray(data.availability)) {
 					const formatted = {}
-					days.forEach(day => {
-						const match = data.availability.find(a => a.day === day.toLowerCase())
-						formatted[day] = {
-							isAvailable: !!(match?.start_time && match.end_time),
+					days.forEach(dayName => {
+						const match = data.availability.find(availabilityRow => availabilityRow.day === dayName.toLowerCase())
+						formatted[dayName] = {
+							isAvailable: !!(match?.start_time && match?.end_time),
 							start: match?.start_time || "",
 							end: match?.end_time || ""
 						}
@@ -476,15 +476,15 @@ export const Profile = () => {
 								{userProfile.first_name && (
 									<p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
 								)}
-								{userProfile.availability && userProfile.availability.some(a => a.start_time && a.end_time) && (
+								{userProfile.availability && userProfile.availability.some(availabilityRow => availabilityRow.start_time && availabilityRow.end_time) && (
 									<div>
 										<strong>Availability:</strong>
 										{userProfile.availability
-											.filter(a => a.start_time && a.end_time)
-											.sort((a, b) => days.indexOf(a.day.charAt(0).toUpperCase() + a.day.slice(1)) - days.indexOf(b.day.charAt(0).toUpperCase() + b.day.slice(1)))
-											.map(a => (
-												<p key={a.id}>
-													{a.day.charAt(0).toUpperCase() + a.day.slice(1)}: {formatTime(a.start_time)} - {formatTime(a.end_time)}
+											.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
+											.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
+											.map(availabilityRow => (
+												<p key={availabilityRow.id}>
+													{availabilityRow.day.charAt(0).toUpperCase() + availabilityRow.day.slice(1)}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}
 												</p>
 											))
 										}
@@ -498,9 +498,9 @@ export const Profile = () => {
 									onClick={() => {
 										if (userProfile.availability && Array.isArray(userProfile.availability)) {
 											const formatted = {}
-											days.forEach(day => {
-												const match = userProfile.availability.find(a => a.day === day.toLowerCase())
-												formatted[day] = {
+											days.forEach(dayName => {
+												const match = userProfile.availability.find(availabilityRow => availabilityRow.day === dayName.toLowerCase())
+												formatted[dayName] = {
 													isAvailable: !!(match?.start_time && match?.end_time),
 													start: match?.start_time || "",
 													end: match?.end_time || ""
