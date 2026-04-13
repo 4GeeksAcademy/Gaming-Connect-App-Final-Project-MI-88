@@ -1,0 +1,783 @@
+import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx"
+import useActions from "../hooks/useActions.jsx"
+import { GameCard } from "../components/GameCard.jsx"
+import { GameSearchBar } from "../components/GameSearchBar.jsx"
+import { AvailabilityDay } from "../components/AvailabilityDay.jsx"
+import { array } from "prop-types"
+
+export const Profile = () => {
+	const { store, dispatch } = useGlobalReducer()
+	const { postToIGDB } = useActions()
+	const navigate = useNavigate()
+
+	const [userProfile, setUserProfile] = useState(null)
+	const [isLoading, setIsLoading] = useState(true)
+	const [isEditingProfile, setIsEditingProfile] = useState(false)
+	const [editFormData, setEditFormData] = useState({})
+	const [uploadError, setUploadError] = useState("")
+	const [successMessage, setSuccessMessage] = useState("")
+	const [friends, setFriends] = useState([])
+	const [isLoadingFriends, setIsLoadingFriends] = useState(false)
+	const [pendingRequests, setPendingRequests] = useState([])
+	const [availableDays, setAvailableDays] = useState([])
+	const [availableDaysData, setAvailableDaysData] = useState({
+		Sunday: {isAvailable: false, start: "", end: "" },
+		Monday: {isAvailable: false, start: "", end: "" },
+		Tuesday: {isAvailable: false, start: "", end: "" },
+		Wednesday: {isAvailable: false, start: "", end: "" },
+		Thursday: {isAvailable: false, start: "", end: "" },
+		Friday: {isAvailable: false, start: "", end: "" },
+		Saturday: {isAvailable: false, start: "", end: "" }
+	})
+	const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+	// Check authentication on component mount
+	useEffect(() => {
+		const token = localStorage.getItem("token")
+		if (!token) {
+			navigate("/login")
+			return
+		}
+
+		fetchUserProfile()
+		fetchFriends()
+		fetchPendingRequests()
+	}, [navigate])
+	const fetchUserProfile = async () => {
+		setIsLoading(true)
+		try {
+			const token = localStorage.getItem("token")
+			if (!token) {
+				navigate("/login")
+				return
+			}
+
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/profile`, {
+				method: "GET",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				}
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile(data)
+				setEditFormData({
+					first_name: data.first_name || "",
+					last_name: data.last_name || "",
+					bio: data.bio || "",
+					favorite_game: data.favorite_game || "",
+					preferred_genre: data.preferred_genre || "",
+					playstyle: data.playstyle || "",
+					availability: data.availability || ""
+				})
+				setAvailableDays(data.availability)
+				if (data.availability && Array.isArray(data.availability)) {
+					const formatted =  {}
+					days.forEach(day => {
+						const match = data.availability.find(a => a.day === day.toLowerCase())
+						formatted[day] = {
+							isAvailable: !!(match?.start_time && match?.end_time),
+							start: match?.start_time || "",
+							end: match?.end_time || ""
+						}
+					})
+					setAvailableDaysData(formatted)
+				}
+			} else if (response.status === 401) {
+				// Token is invalid or expired
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				console.error("Failed to fetch profile:", data)
+				setUploadError("Failed to load profile. Please try again.")
+			}
+		} catch (error) {
+			console.error("Error fetching profile:", error)
+			setUploadError("Network error. Please check your connection.")
+		} finally {
+			setIsLoading(false)
+		}
+	}
+
+	const fetchFriends = async () => {
+		setIsLoadingFriends(true)
+		try {
+			const token = localStorage.getItem("token")
+			if (!token) return
+
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/profile/friends`, {
+				method: "GET",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				}
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setFriends(data)
+			} else if (response.status === 401) {
+				// Token is invalid or expired
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				console.error("Error fetching friends:", data)
+			}
+		} catch (error) {
+			console.error("Error fetching friends:", error)
+		} finally {
+			setIsLoadingFriends(false)
+		}
+	}
+
+	const fetchPendingRequests = async () => {
+		try {
+			const token = localStorage.getItem("token")
+			if (!token) return
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/friend-requests`, {
+				headers: { "Authorization": `Bearer ${token}` }
+			})
+			const data = await response.json()
+			if (response.ok) setPendingRequests(data)
+		} catch (error) {
+			console.error("Error fetching friend requests:", error)
+		}
+	}
+
+	const handleRespondToRequest = async (requestId, action) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+			const response = await fetch(`${backendUrl}/api/friend-requests/${requestId}`, {
+				method: "PATCH",
+				headers: {
+					"Authorization": `Bearer ${token}`,
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ status: action })
+			})
+			const data = await response.json()
+			if (response.ok) {
+				setPendingRequests(prev => prev.filter(r => r.id !== requestId))
+				if (action === "accepted") {
+					setSuccessMessage(`You are now friends!`)
+					fetchFriends()
+				} else {
+					setSuccessMessage("Request declined.")
+				}
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else {
+				setUploadError(data.error || "Failed to respond to request")
+			}
+		} catch (error) {
+			console.error("Error responding to request:", error)
+			setUploadError("Network error")
+		}
+	}
+
+	const formatTime = (val) => {
+		const num = parseInt(val)
+		if (isNaN(num)) return ""
+		if (num === 0) return "12:00am"
+		if (num === 24) return "11:59pm"
+		if (num < 12) return `${num}:00am`
+		if (num === 12) return "12:00pm"
+		return `${num - 12}:00pm`
+	}
+
+	const handleAvailabilityDayChange = (day, dayData) => {
+		const updated = { ...availableDaysData, [day]: dayData }
+		setAvailableDaysData(updated)
+
+		const asArray = Object.entries(updated)
+		.filter(([_, v]) => v.isAvailable)
+		.map(([d, v]) => ({ day: d.toLowerCase(), start: v.start, end: v.end}))
+
+		setEditFormData(prev => ({ ...prev, availability: asArray }))
+	}
+
+	const handleProfileUpdate = async (e) => {
+		e.preventDefault()
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile`, {
+				method: "PUT",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify(editFormData)
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile(data)
+				if (data.availability && Array.isArray(data.availability)) {
+					const formatted = {}
+					days.forEach(day => {
+						const match = data.availability.find(a => a.day === day.toLowerCase())
+						formatted[day] = {
+							isAvailable: !!(match?.start_time && match.end_time),
+							start: match?.start_time || "",
+							end: match?.end_time || ""
+						}
+					})
+					setAvailableDays(formatted)
+				}
+				setIsEditingProfile(false)
+				setSuccessMessage("Profile updated successfully!")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				setUploadError(data.error || "Failed to update profile")
+			}
+		} catch (error) {
+			console.error("Error updating profile:", error)
+			setUploadError("Error updating profile")
+		}
+	}
+
+	const handleProfilePictureUpload = async (e) => {
+		const file = e.target.files[0]
+		if (!file) return
+
+		// For now, we'll use a simple URL-based approach
+		// In production, you'd upload to a cloud service (S3, Cloudinary, etc.)
+		// and get back a URL
+		const reader = new FileReader()
+		reader.onload = async (event) => {
+			try {
+				const token = localStorage.getItem("token")
+				const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+				const response = await fetch(`${backendUrl}/api/profile`, {
+					method: "PUT",
+					headers: {
+						"Accept": "application/json",
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						profile_picture_url: event.target.result
+					})
+				})
+
+				const data = await response.json()
+
+				if (response.ok) {
+					setUserProfile(data)
+					setSuccessMessage("Profile picture updated!")
+					setTimeout(() => setSuccessMessage(""), 3000)
+				} else {
+					setUploadError("Failed to upload picture")
+				}
+			} catch (error) {
+				console.error("Error uploading picture:", error)
+				setUploadError("Error uploading picture")
+			}
+		}
+		reader.readAsDataURL(file)
+	}
+
+	const handleAddGameToFavorites = async (gameData) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/favorites`, {
+				method: "POST",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify(gameData)
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile({
+					...userProfile,
+					favorites: data.favorites
+				})
+				setSuccessMessage(`${gameData.name} added to favorites!`)
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				setUploadError(data.error || "Failed to add game to favorites")
+			}
+		} catch (error) {
+			console.error("Error adding to favorites:", error)
+			setUploadError("Error adding to favorites")
+		}
+	}
+
+	const handleRemoveGameFromFavorites = async (gameId) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}`, {
+				method: "DELETE",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				}
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile({
+					...userProfile,
+					favorites: data.favorites
+				})
+				setSuccessMessage("Game removed from favorites")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				setUploadError(data.error || "Failed to remove game")
+			}
+		} catch (error) {
+			console.error("Error removing game:", error)
+			setUploadError("Error removing game")
+		}
+	}
+
+	const handleUpdateSkillLevel = async (gameId, skillLevel) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}/skill`, {
+				method: "PATCH",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify({ skill_level: skillLevel })
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile({
+					...userProfile,
+					favorites: data.favorites
+				})
+				setSuccessMessage("Skill level updated!")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				setUploadError(data.error || "Failed to update skill level")
+			}
+		} catch (error) {
+			console.error("Error updating skill level:", error)
+			setUploadError("Error updating skill level")
+		}
+	}
+
+	const handleUpdateReview = async (gameId, personalRating, review) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}/review`, {
+				method: "PATCH",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify({ personal_rating: personalRating, review: review })
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile({
+					...userProfile,
+					favorites: data.favorites
+				})
+				setSuccessMessage("Review and rating updated!")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else if (response.status === 401) {
+				localStorage.removeItem("token")
+				navigate("/login")
+				return
+			} else {
+				setUploadError(data.error || "Failed to update review")
+			}
+		} catch (error) {
+			console.error("Error updating review:", error)
+			setUploadError("Error updating review")
+		}
+	}
+
+	if (isLoading) {
+		return (
+			<div className="profile-loading">
+				<div className="spinner-border" role="status">
+					<span className="visually-hidden">Loading...</span>
+				</div>
+				<p>Loading your profile...</p>
+			</div>
+		)
+	}
+
+	if (!userProfile) {
+		return (
+			<div className="alert alert-danger">
+				Failed to load profile. Please log in again.
+			</div>
+		)
+	}
+
+	return (
+		<div className="profile-container">
+			{/* Success and Error Messages */}
+			{successMessage && (
+				<div className="alert alert-success alert-dismissible fade show" role="alert">
+					{successMessage}
+					<button type="button" className="btn-close" onClick={() => setSuccessMessage("")}></button>
+				</div>
+			)}
+			{uploadError && (
+				<div className="alert alert-danger alert-dismissible fade show" role="alert">
+					{uploadError}
+					<button type="button" className="btn-close" onClick={() => setUploadError("")}></button>
+				</div>
+			)}
+
+			<div className="profile-layout">
+				{/* Left Column: Profile Info and Search Bar */}
+				<div className="profile-left">
+					{/* Profile Header */}
+					<div className="profile-header">
+						<div className="profile-picture-section">
+							<div className="profile-picture">
+								{userProfile.profile_picture_url ? (
+									<img src={userProfile.profile_picture_url} alt={userProfile.user_name} />
+								) : (
+									<div className="placeholder-avatar">
+										<i className="fas fa-user"></i>
+									</div>
+								)}
+							</div>
+							<div className="picture-actions">
+								<label htmlFor="profilePictureInput" className="btn btn-sm btn-primary">
+									Upload Picture
+								</label>
+								<input
+									id="profilePictureInput"
+									type="file"
+									accept="image/*"
+									onChange={handleProfilePictureUpload}
+									style={{ display: "none" }}
+								/>
+							</div>
+						</div>
+
+						<div className="profile-info">
+							<h1 className="gamertag">{userProfile.user_name || "Username"}</h1>
+							{userProfile.playstyle && (
+								<div className="playstyle-box mb-2 p-2 border rounded bg-light d-inline-block">
+									<strong>Playstyle:</strong> {userProfile.playstyle}
+								</div>
+							)}
+							<div className="profile-badges mb-3">
+								<span className="badge bg-warning text-dark me-1">Weekend Warrior</span>
+								<span className="badge bg-success me-1">Friendly Gamer</span>
+								<span className="badge bg-danger">Killamanjaro</span>
+							</div>
+
+							{/* New Interests Section under Badges */}
+							{(userProfile.bio || userProfile.favorite_game || userProfile.preferred_genre) && (
+								<div className="user-interests-section mb-3 text-start">
+									{userProfile.bio && (
+										<div className="bio-display mb-3 p-3 border-start border-4 border-primary bg-light rounded">
+											<h6 className="fw-bold mb-1"><i className="fas fa-quote-left me-2"></i>About Me</h6>
+											<p className="mb-0 text-muted">{userProfile.bio}</p>
+										</div>
+									)}
+									<div className="d-flex flex-wrap gap-2">
+										{userProfile.favorite_game && (
+											<div className="interest-tag px-3 py-1 bg-primary text-white rounded-pill small">
+												<i className="fas fa-gamepad me-2"></i>{userProfile.favorite_game}
+											</div>
+										)}
+										{userProfile.preferred_genre && (
+											<div className="interest-tag px-3 py-1 bg-info text-white rounded-pill small">
+												<i className="fas fa-tags me-2"></i>{userProfile.preferred_genre}
+											</div>
+										)}
+									</div>
+								</div>
+							)}
+
+							<p className="user-email text-muted small mb-3">{userProfile.email}</p>
+							
+							<div className="user-details-summary">
+								{userProfile.first_name && (
+									<p className="mb-1"><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
+								)}
+								{userProfile.availability && userProfile.availability.some(a => a.start_time && a.end_time) && (
+									<div>
+										<strong>Availability:</strong>
+										{userProfile.availability
+										.filter(a => a.start_time && a.end_time)
+										.map(a => (
+											<p key={a.id}>
+												{a.day.charAt(0).toUpperCase() + a.day.slice(1)}: {formatTime(a.start_time)} - {formatTime(a.end_time)}
+											</p>
+										))}
+									</div>
+								)}
+							</div>
+
+							{!isEditingProfile ? (
+								<button
+									className="btn btn-secondary btn-sm"
+									onClick={() => setIsEditingProfile(true)}
+								>
+									Edit Profile
+								</button>
+							) : (
+								<form onSubmit={handleProfileUpdate} className="edit-profile-form">
+									<div className="form-group">
+										<label htmlFor="firstName">First Name</label>
+										<input
+											id="firstName"
+											type="text"
+											className="form-control"
+											value={editFormData.first_name || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												first_name: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group">
+										<label htmlFor="lastName">Last Name</label>
+										<input
+											id="lastName"
+											type="text"
+											className="form-control"
+											value={editFormData.last_name || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												last_name: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group mb-3">
+										<label htmlFor="bio">Bio</label>
+										<textarea
+											id="bio"
+											className="form-control"
+											rows="3"
+											value={editFormData.bio || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												bio: e.target.value
+											})}
+										></textarea>
+									</div>
+									<div className="form-group mb-3">
+										<label htmlFor="favoriteGame">Favorite Game</label>
+										<input
+											id="favoriteGame"
+											type="text"
+											className="form-control"
+											value={editFormData.favorite_game || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												favorite_game: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group mb-3">
+										<label htmlFor="preferredGenre">Preferred Genre</label>
+										<input
+											id="preferredGenre"
+											type="text"
+											className="form-control"
+											value={editFormData.preferred_genre || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												preferred_genre: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group mb-3">
+										<label htmlFor="playstyle">Playstyle</label>
+										<select
+											id="playstyle"
+											className="form-control"
+											value={editFormData.playstyle || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												playstyle: e.target.value
+											})}
+										>
+											<option value="">Select Playstyle</option>
+											<option value="Tryhard">Tryhard</option>
+											<option value="Agnostic">Agnostic</option>
+											<option value="Casual">Casual</option>
+											<option value="Just Goofin'">Just Goofin'</option>
+										</select>
+									</div>
+									<label className="fw-bold mt-2">Availability:</label>
+									<div>
+										{["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => (
+											<AvailabilityDay
+												key={day}
+												day={day}
+												isAvailable={availableDaysData[day]?.isAvailable || false}
+												start={availableDaysData[day]?.start || ""}
+												end={availableDaysData[day]?.end || ""}
+												onChange={handleAvailabilityDayChange}
+												/>
+										))}
+									</div>
+									<div className="button-group">
+										<button type="submit" className="btn btn-primary btn-sm">
+											Save Changes
+										</button>
+										<button
+											type="button"
+											className="btn btn-secondary btn-sm"
+											onClick={() => setIsEditingProfile(false)}
+										>
+											Cancel
+										</button>
+									</div>
+								</form>
+							)}
+						</div>
+					</div>
+
+					{/* Game Search Bar */}
+					<div className="search-section">
+						<GameSearchBar onGameSelect={handleAddGameToFavorites} />
+					</div>
+				</div>
+
+				{/* Right Column: Favorites and Friends Lists */}
+				<div className="profile-right">
+					{/* Favorites Section */}
+					<div className="favorites-section">
+						<h2>My Favorite Games</h2>
+						{userProfile.favorites && userProfile.favorites.length > 0 ? (
+							<div className="favorites-grid">
+								{userProfile.favorites.map((game) => (
+									<GameCard
+										key={game.id}
+										game={game}
+										onRemove={handleRemoveGameFromFavorites}
+										onSkillUpdate={handleUpdateSkillLevel}
+										onReviewUpdate={handleUpdateReview}
+										isEditable={true}
+									/>
+								))}
+							</div>
+						) : (
+							<p className="empty-message">No favorite games yet. Search and add some games!</p>
+						)}
+					</div>
+
+					{/* Pending Friend Requests Section */}
+					{pendingRequests.length > 0 && (
+						<div className="friends-section mb-4">
+							<h2>Friend Requests ({pendingRequests.length})</h2>
+							<div className="friends-list">
+								{pendingRequests.map((req) => (
+									<div key={req.id} className="friend-item">
+										<div className="friend-info">
+											<h5>{req.sender_username}</h5>
+											<p className="text-muted small">wants to connect with you</p>
+										</div>
+										<div className="d-flex gap-2">
+											<button
+												className="btn btn-sm btn-primary"
+												onClick={() => handleRespondToRequest(req.id, "accepted")}
+											>
+												Accept
+											</button>
+											<button
+												className="btn btn-sm btn-outline-danger"
+												onClick={() => handleRespondToRequest(req.id, "declined")}
+											>
+												Decline
+											</button>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* Friends Section */}
+					<div className="friends-section">
+						<h2>My Friends ({friends.length})</h2>
+						{friends.length > 0 ? (
+							<div className="friends-list">
+								{friends.map((friend) => (
+									<div key={friend.id} className="friend-item">
+										<div className="friend-info">
+											<h5>{friend.user_name}</h5>
+											<p>{friend.email}</p>
+										</div>
+										<button
+											className="btn btn-sm btn-outline-danger"
+											onClick={() => {
+												// Handle remove friend
+												console.log("Remove friend:", friend.id)
+											}}
+										>
+											Remove
+										</button>
+									</div>
+								))}
+							</div>
+						) : (
+							<p className="empty-message">No friends yet. Connect with other players!</p>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}

@@ -6,9 +6,18 @@ import {
     Route,
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home";
+import { Profile } from "./pages/Profile";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
+import { AboutUs } from "./pages/AboutUs";
+import { ContactUs } from "./pages/ContactUs";
+import { FAQ } from "./pages/FAQ";
+import { Login } from "./pages/Login";
+import { Signup } from "./pages/Signup";
+import { ProfileSettings } from "./pages/ProfileSettings";
+import { Home } from "./pages/Home";
+import { LandingPage } from "./pages/LandingPage";
+import { UserProfile } from "./pages/UserProfile";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -22,9 +31,24 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path= "/" element={<Home />} />
+        <Route path="/home" element={<Home />} />  {/* Default route for the base path */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path= "/profile" element={<Profile />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
+        <Route path="/profile/:userId" element={<UserProfile />} />
       </Route>
-    )
+    ),
+    {
+        future: {
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+        },
+    }
 );
