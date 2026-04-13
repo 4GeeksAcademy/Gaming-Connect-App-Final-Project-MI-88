@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { GameCard } from "../components/GameCard.jsx"
+
+const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+const formatTime = (val) => {
+	const num = parseInt(val)
+	if (isNaN(num)) return ""
+	if (num === 0) return "12:00am"
+	if (num === 24) return "11:59pm"
+	if (num < 12) return `${num}:00am`
+	if (num === 12) return "12:00pm"
+	return `${num - 12}:00pm`
+}
 
 export const UserProfile = () => {
 	const { userId } = useParams()
@@ -7,7 +20,7 @@ export const UserProfile = () => {
 	const [profile, setProfile] = useState(null)
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState("")
-	const [connectionStatus, setConnectionStatus] = useState("none") // none | request_sent | request_received | friends
+	const [connectionStatus, setConnectionStatus] = useState("none")
 	const [requestId, setRequestId] = useState(null)
 	const [actionLoading, setActionLoading] = useState(false)
 	const [actionMessage, setActionMessage] = useState("")
@@ -148,88 +161,94 @@ export const UserProfile = () => {
 
 	if (isLoading) {
 		return (
-			<div className="d-flex justify-content-center align-items-center mt-5">
+			<div className="profile-loading">
 				<div className="spinner-border" role="status">
 					<span className="visually-hidden">Loading...</span>
 				</div>
-				<p className="ms-3">Loading profile...</p>
+				<p>Loading profile...</p>
 			</div>
 		)
 	}
 
 	if (error || !profile) {
 		return (
-			<div className="container mt-5">
-				<div className="alert alert-danger">{error || "Profile not found."}</div>
-				<button className="btn btn-secondary" onClick={() => navigate(-1)}>Go Back</button>
+			<div className="alert alert-danger">
+				{error || "Profile not found."}
+				<button className="btn btn-secondary ms-3" onClick={() => navigate(-1)}>Go Back</button>
 			</div>
 		)
 	}
 
 	return (
-		<div className="container mt-5">
-			<button className="btn btn-outline-secondary mb-4" onClick={() => navigate(-1)}>
-				&larr; Back
-			</button>
+		<div className="profile-container">
+			{actionMessage && (
+				<div className="alert alert-success alert-dismissible fade show" role="alert">
+					{actionMessage}
+					<button type="button" className="btn-close" onClick={() => setActionMessage("")}></button>
+				</div>
+			)}
 
-			<div className="card shadow-sm p-4">
-				<div className="d-flex align-items-center justify-content-between mb-4">
-					<div className="d-flex align-items-center">
-						<div className="me-4">
-							{profile.profile_picture_url ? (
-								<img
-									src={profile.profile_picture_url}
-									alt={profile.user_name}
-									className="rounded-circle"
-									style={{ width: 100, height: 100, objectFit: "cover" }}
-								/>
-							) : (
-								<div
-									className="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
-									style={{ width: 100, height: 100 }}
-								>
-									<i className="fas fa-user fa-3x text-white"></i>
-								</div>
-							)}
+			<div className="profile-layout">
+				{/* Left Column */}
+				<div className="profile-left">
+					<div className="profile-header">
+						<div className="profile-picture-section">
+							<div className="profile-picture">
+								{profile.profile_picture_url ? (
+									<img src={profile.profile_picture_url} alt={profile.user_name} />
+								) : (
+									<div className="placeholder-avatar">
+										<i className="fas fa-user"></i>
+									</div>
+								)}
+							</div>
 						</div>
-						<div>
-							<h1 className="mb-1">{profile.user_name}</h1>
-							{profile.first_name && (
-								<p className="text-muted mb-0">{profile.first_name} {profile.last_name}</p>
-							)}
-						</div>
-					</div>
 
-					<div className="text-end">
-						{renderConnectionButton()}
-						{actionMessage && (
-							<p className="mt-2 small text-muted">{actionMessage}</p>
-						)}
+						<div className="profile-info">
+							<h1 className="gamertag">{profile.user_name}</h1>
+							<div className="user-details">
+								{profile.first_name && (
+									<p><strong>Name:</strong> {profile.first_name} {profile.last_name}</p>
+								)}
+								{profile.availability && profile.availability.some(r => r.start_time && r.end_time) && (
+									<div>
+										<strong>Availability:</strong>
+										{profile.availability
+											.filter(r => r.start_time && r.end_time)
+											.sort((a, b) => days.indexOf(a.day.charAt(0).toUpperCase() + a.day.slice(1)) - days.indexOf(b.day.charAt(0).toUpperCase() + b.day.slice(1)))
+											.map(r => (
+												<p key={r.id}>
+													{r.day.charAt(0).toUpperCase() + r.day.slice(1)}: {formatTime(r.start_time)} - {formatTime(r.end_time)}
+												</p>
+											))
+										}
+									</div>
+								)}
+							</div>
+
+							{renderConnectionButton()}
+						</div>
 					</div>
 				</div>
 
-				<div>
-					<h4>Favorite Games ({profile.favorites?.length || 0})</h4>
-					{profile.favorites && profile.favorites.length > 0 ? (
-						<div className="row">
-							{profile.favorites.map((game, index) => (
-								<div key={index} className="col-md-4 mb-3">
-									<div className="card h-100">
-										<div className="card-body">
-											<h6 className="card-title">{game.name}</h6>
-											{game.skill_level && (
-												<p className="card-text small text-muted">
-													Skill Level: {game.skill_level}/10
-												</p>
-											)}
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					) : (
-						<p className="text-muted">No favorite games listed.</p>
-					)}
+				{/* Right Column */}
+				<div className="profile-right">
+					<div className="favorites-section">
+						<h2>{profile.user_name}'s Favorite Games</h2>
+						{profile.favorites && profile.favorites.length > 0 ? (
+							<div className="favorites-grid">
+								{profile.favorites.map((game) => (
+									<GameCard
+										key={game.id}
+										game={game}
+										isEditable={false}
+									/>
+								))}
+							</div>
+						) : (
+							<p className="empty-message">No favorite games listed.</p>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
