@@ -23,13 +23,13 @@ export const Profile = () => {
 	const [pendingRequests, setPendingRequests] = useState([])
 	const [availableDays, setAvailableDays] = useState([])
 	const [availableDaysData, setAvailableDaysData] = useState({
-		Sunday: {isAvailable: false, start: "", end: "" },
-		Monday: {isAvailable: false, start: "", end: "" },
-		Tuesday: {isAvailable: false, start: "", end: "" },
-		Wednesday: {isAvailable: false, start: "", end: "" },
-		Thursday: {isAvailable: false, start: "", end: "" },
-		Friday: {isAvailable: false, start: "", end: "" },
-		Saturday: {isAvailable: false, start: "", end: "" }
+		Sunday: { isAvailable: false, start: "", end: "" },
+		Monday: { isAvailable: false, start: "", end: "" },
+		Tuesday: { isAvailable: false, start: "", end: "" },
+		Wednesday: { isAvailable: false, start: "", end: "" },
+		Thursday: { isAvailable: false, start: "", end: "" },
+		Friday: { isAvailable: false, start: "", end: "" },
+		Saturday: { isAvailable: false, start: "", end: "" }
 	})
 	const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -75,7 +75,7 @@ export const Profile = () => {
 				})
 				setAvailableDays(data.availability)
 				if (data.availability && Array.isArray(data.availability)) {
-					const formatted =  {}
+					const formatted = {}
 					days.forEach(day => {
 						const match = data.availability.find(a => a.day === day.toLowerCase())
 						formatted[day] = {
@@ -199,8 +199,8 @@ export const Profile = () => {
 		setAvailableDaysData(updated)
 
 		const asArray = Object.entries(updated)
-		.filter(([_, v]) => v.isAvailable)
-		.map(([d, v]) => ({ day: d.toLowerCase(), start: v.start, end: v.end}))
+			.filter(([_, v]) => v.isAvailable)
+			.map(([d, v]) => ({ day: d.toLowerCase(), start: v.start, end: v.end }))
 
 		setEditFormData(prev => ({ ...prev, availability: asArray }))
 	}
@@ -235,7 +235,7 @@ export const Profile = () => {
 							end: match?.end_time || ""
 						}
 					})
-					setAvailableDays(formatted)
+					setAvailableDaysData(formatted)
 				}
 				setIsEditingProfile(false)
 				setSuccessMessage("Profile updated successfully!")
@@ -480,12 +480,14 @@ export const Profile = () => {
 									<div>
 										<strong>Availability:</strong>
 										{userProfile.availability
-										.filter(a => a.start_time && a.end_time)
-										.map(a => (
-											<p key={a.id}>
-												{a.day.charAt(0).toUpperCase() + a.day.slice(1)}: {formatTime(a.start_time)} - {formatTime(a.end_time)}
-											</p>
-										))}
+											.filter(a => a.start_time && a.end_time)
+											.sort((a, b) => days.indexOf(a.day.charAt(0).toUpperCase() + a.day.slice(1)) - days.indexOf(b.day.charAt(0).toUpperCase() + b.day.slice(1)))
+											.map(a => (
+												<p key={a.id}>
+													{a.day.charAt(0).toUpperCase() + a.day.slice(1)}: {formatTime(a.start_time)} - {formatTime(a.end_time)}
+												</p>
+											))
+										}
 									</div>
 								)}
 							</div>
@@ -493,7 +495,21 @@ export const Profile = () => {
 							{!isEditingProfile ? (
 								<button
 									className="btn btn-secondary btn-sm"
-									onClick={() => setIsEditingProfile(true)}
+									onClick={() => {
+										if (userProfile.availability && Array.isArray(userProfile.availability)) {
+											const formatted = {}
+											days.forEach(day => {
+												const match = userProfile.availability.find(a => a.day === day.toLowerCase())
+												formatted[day] = {
+													isAvailable: !!(match?.start_time && match?.end_time),
+													start: match?.start_time || "",
+													end: match?.end_time || ""
+												}
+											})
+											setAvailableDaysData(formatted)
+										}
+										setIsEditingProfile(true)
+									}}
 								>
 									Edit Profile
 								</button>
@@ -535,7 +551,7 @@ export const Profile = () => {
 												start={availableDaysData[day]?.start || ""}
 												end={availableDaysData[day]?.end || ""}
 												onChange={handleAvailabilityDayChange}
-												/>
+											/>
 										))}
 									</div>
 									<div className="button-group">
