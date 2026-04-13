@@ -295,6 +295,33 @@ export const Profile = () => {
 		reader.readAsDataURL(file)
 	}
 
+	const handleRemoveFriend = async (friendId) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/friends/${friendId}`, {
+				method: "DELETE",
+				headers: {
+					"Authorization": `Bearer ${token}`
+				}
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setFriends(prev => prev.filter(currentFriend => currentFriend.id !== friendId))
+				setSuccessMessage("Friend successfully removed!")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else {
+				setUploadError(data.error || "Failed to remove friend.")
+			}
+		} catch (error) {
+			console.error("Error removing friend:", error)
+			setUploadError("Error with the network.")
+		}
+	}
+
 	const handleAddGameToFavorites = async (gameData) => {
 		try {
 			const token = localStorage.getItem("token")
@@ -643,10 +670,7 @@ export const Profile = () => {
 										</div>
 										<button
 											className="btn btn-sm btn-outline-danger"
-											onClick={() => {
-												// Handle remove friend
-												console.log("Remove friend:", friend.id)
-											}}
+											onClick={() => handleRemoveFriend(friend.id)}
 										>
 											Remove
 										</button>
