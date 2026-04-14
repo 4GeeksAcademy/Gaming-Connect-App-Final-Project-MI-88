@@ -206,10 +206,45 @@ export const UserProfile = () => {
 
 						<div className="profile-info">
 							<h1 className="gamertag">{profile.user_name}</h1>
+							<div className="badge-system">
+								<span className="badge-item">Weekend Warrior</span>
+								<span className="badge-item">Friendly Gamer</span>
+								<span className="badge-item badge-red">Killamanjaro</span>
+							</div>
 							<div className="user-details">
 								{profile.first_name && (
 									<p><strong>Name:</strong> {profile.first_name} {profile.last_name}</p>
 								)}
+
+								{profile.bio && (
+									<div className="bio-quote-box">
+										<i className="fas fa-quote-left"></i>
+										<p>{profile.bio}</p>
+									</div>
+								)}
+
+								<div className="interests-ui">
+									{profile.favorite_game && (
+										<span className="interest-pill game-pill">
+											<i className="fas fa-gamepad"></i> {profile.favorite_game}
+										</span>
+									)}
+									{profile.preferred_genre && (
+										<span className="interest-pill genre-pill">
+											<i className="fas fa-ghost"></i> {profile.preferred_genre}
+										</span>
+									)}
+								</div>
+
+								{profile.playstyle && (
+									<div className="playstyle-box mb-3">
+										<strong>Playstyle:</strong>
+										<span className={`playstyle-tag ${profile.playstyle.toLowerCase().replace(" ", "-")}`}>
+											{profile.playstyle}
+										</span>
+									</div>
+								)}
+
 								{profile.availability && profile.availability.some(r => r.start_time && r.end_time) && (
 									<div>
 										<strong>Availability:</strong>

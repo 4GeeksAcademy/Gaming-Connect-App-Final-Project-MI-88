@@ -187,6 +187,15 @@ def update_profile():
                     avail_row.start_time = None
                     avail_row.end_time = None
         
+        if "bio" in data:
+            user.bio = data["bio"]
+        if "favorite_game" in data:
+            user.favorite_game = data["favorite_game"]
+        if "preferred_genre" in data:
+            user.preferred_genre = data["preferred_genre"]
+        if "playstyle" in data:
+            user.playstyle = data["playstyle"]
+        
         db.session.commit()
         return jsonify(user.serialize()), 200
     except Exception as e:
@@ -253,6 +262,30 @@ def update_favorite_skill(game_id):
         db.session.commit()
 
         return jsonify({"msg": "Skill level updated", "favorites": user.serialize()["favorites"]}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@api.route('/profile/favorites/<int:game_id>/review', methods=['PATCH'])
+@jwt_required()
+def update_favorite_review(game_id):
+    """Update the personal rating and review for a favorite game."""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        data = request.json
+        rating = data.get("personal_rating", 0)
+        review = data.get("personal_review", "")
+
+        user.update_favorite_review(game_id, rating, review)
+        db.session.commit()
+
+        return jsonify({"msg": "Review updated", "favorites": user.serialize()["favorites"]}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

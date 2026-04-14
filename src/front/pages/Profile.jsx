@@ -71,6 +71,10 @@ export const Profile = () => {
 				setEditFormData({
 					first_name: data.first_name || "",
 					last_name: data.last_name || "",
+					bio: data.bio || "",
+					favorite_game: data.favorite_game || "",
+					preferred_genre: data.preferred_genre || "",
+					playstyle: data.playstyle || "",
 					availability: data.availability || ""
 				})
 				setAvailableDays(data.availability)
@@ -432,6 +436,39 @@ export const Profile = () => {
 		}
 	}
 
+	const handleUpdateReview = async (gameId, rating, review) => {
+		try {
+			const token = localStorage.getItem("token")
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+			const response = await fetch(`${backendUrl}/api/profile/favorites/${gameId}/review`, {
+				method: "PATCH",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify({ personal_rating: rating, personal_review: review })
+			})
+
+			const data = await response.json()
+
+			if (response.ok) {
+				setUserProfile({
+					...userProfile,
+					favorites: data.favorites
+				})
+				setSuccessMessage("Review updated!")
+				setTimeout(() => setSuccessMessage(""), 3000)
+			} else {
+				setUploadError(data.error || "Failed to update review")
+			}
+		} catch (error) {
+			console.error("Error updating review:", error)
+			setUploadError("Error updating review")
+		}
+	}
+
 	if (isLoading) {
 		return (
 			<div className="profile-loading">
@@ -498,11 +535,46 @@ export const Profile = () => {
 
 						<div className="profile-info">
 							<h1 className="gamertag">{userProfile.user_name || "Username"}</h1>
+							<div className="badge-system">
+								<span className="badge-item">Weekend Warrior</span>
+								<span className="badge-item">Friendly Gamer</span>
+								<span className="badge-item badge-red">Killamanjaro</span>
+							</div>
 							<p className="user-email">{userProfile.email}</p>
 							<div className="user-details">
 								{userProfile.first_name && (
 									<p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
 								)}
+								
+								{userProfile.bio && (
+									<div className="bio-quote-box">
+										<i className="fas fa-quote-left"></i>
+										<p>{userProfile.bio}</p>
+									</div>
+								)}
+
+								<div className="interests-ui">
+									{userProfile.favorite_game && (
+										<span className="interest-pill game-pill">
+											<i className="fas fa-gamepad"></i> {userProfile.favorite_game}
+										</span>
+									)}
+									{userProfile.preferred_genre && (
+										<span className="interest-pill genre-pill">
+											<i className="fas fa-ghost"></i> {userProfile.preferred_genre}
+										</span>
+									)}
+								</div>
+
+								{userProfile.playstyle && (
+									<div className="playstyle-box">
+										<strong>Playstyle:</strong>
+										<span className={`playstyle-tag ${userProfile.playstyle.toLowerCase().replace(" ", "-")}`}>
+											{userProfile.playstyle}
+										</span>
+									</div>
+								)}
+
 								{userProfile.availability && userProfile.availability.some(availabilityRow => availabilityRow.start_time && availabilityRow.end_time) && (
 									<div>
 										<strong>Availability:</strong>
@@ -556,17 +628,61 @@ export const Profile = () => {
 										/>
 									</div>
 									<div className="form-group">
-										<label htmlFor="lastName">Last Name</label>
-										<input
-											id="lastName"
-											type="text"
+										<label htmlFor="bio">Bio</label>
+										<textarea
+											id="bio"
 											className="form-control"
-											value={editFormData.last_name || ""}
+											rows="3"
+											value={editFormData.bio || ""}
 											onChange={(e) => setEditFormData({
 												...editFormData,
-												last_name: e.target.value
+												bio: e.target.value
+											})}
+										></textarea>
+									</div>
+									<div className="form-group">
+										<label htmlFor="favoriteGame">Favorite Game</label>
+										<input
+											id="favoriteGame"
+											type="text"
+											className="form-control"
+											value={editFormData.favorite_game || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												favorite_game: e.target.value
 											})}
 										/>
+									</div>
+									<div className="form-group">
+										<label htmlFor="preferredGenre">Preferred Genre</label>
+										<input
+											id="preferredGenre"
+											type="text"
+											className="form-control"
+											value={editFormData.preferred_genre || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												preferred_genre: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group">
+										<label htmlFor="playstyle">Playstyle</label>
+										<select
+											id="playstyle"
+											className="form-control"
+											value={editFormData.playstyle || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												playstyle: e.target.value
+											})}
+										>
+											<option value="">Select Playstyle</option>
+											<option value="Tryhard">Tryhard</option>
+											<option value="Agnostic">Agnostic</option>
+											<option value="Casual">Casual</option>
+											<option value="Goofin Around">Goofin Around</option>
+										</select>
 									</div>
 									<label>Availability:</label>
 									<div>
@@ -617,6 +733,7 @@ export const Profile = () => {
 										game={game}
 										onRemove={handleRemoveGameFromFavorites}
 										onSkillUpdate={handleUpdateSkillLevel}
+										onReviewUpdate={handleUpdateReview}
 										isEditable={true}
 									/>
 								))}
