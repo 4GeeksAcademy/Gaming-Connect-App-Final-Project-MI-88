@@ -18,6 +18,7 @@ import { ProfileSettings } from "./pages/ProfileSettings";
 import { Home } from "./pages/Home";
 import { LandingPage } from "./pages/LandingPage";
 import { UserProfile } from "./pages/UserProfile";
+import { ForgotPassword } from "./pages/ForgotPassword";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -43,6 +44,7 @@ export const router = createBrowserRouter(
         <Route path="/faq" element={<FAQ />} />
         <Route path="/profile-settings" element={<ProfileSettings />} />
         <Route path="/profile/:userId" element={<UserProfile />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Route>
     ),
     {

@@ -87,6 +87,10 @@ export const Login = () => {
 						</div>
 
 						<div className="text-center mt-3">
+							<Link to="/forgotpassword">Forgot password?</Link>
+						</div>
+
+						<div className="text-center mt-3">
 							<Link to="/">Back home</Link>
 						</div>
 					</div>
