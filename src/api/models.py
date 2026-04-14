@@ -35,6 +35,10 @@ class User(db.Model):
     profile_picture_url: Mapped[str] = mapped_column(Text, nullable=True)
     favorites: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
     friends: Mapped[str] = mapped_column(Text, nullable=True, default='[]')
+    bio: Mapped[str] = mapped_column(Text, nullable=True)
+    favorite_game: Mapped[str] = mapped_column(String(120), nullable=True)
+    preferred_genre: Mapped[str] = mapped_column(String(120), nullable=True)
+    playstyle: Mapped[str] = mapped_column(String(120), nullable=True)
     availability: Mapped[List["Availability"]] = relationship(back_populates="user")
 
     def serialize(self):
@@ -49,6 +53,10 @@ class User(db.Model):
             "availability": [day.serialize() for day in self.availability],
             "favorites": json.loads(self.favorites) if self.favorites else [],
             "friends": json.loads(self.friends) if self.friends else [],
+            "bio": self.bio,
+            "favorite_game": self.favorite_game,
+            "preferred_genre": self.preferred_genre,
+            "playstyle": self.playstyle,
             # do not serialize the password, its a security breach
         }
     
@@ -62,7 +70,9 @@ class User(db.Model):
                 "cover": game_data.get("cover"),
                 "first_release_date": game_data.get("first_release_date"),
                 "total_rating": game_data.get("total_rating"),
-                "skill_level": game_data.get("skill_level", 1)
+                "skill_level": game_data.get("skill_level", 1),
+                "personal_rating": game_data.get("personal_rating", 0),
+                "personal_review": game_data.get("personal_review", "")
             }
             favorites.append(game_entry)
             self.favorites = json.dumps(favorites)
@@ -88,6 +98,19 @@ class User(db.Model):
             self.favorites = json.dumps(favorites)
         except Exception as e:
             print(f"Error updating skill level: {e}")
+    
+    def update_favorite_review(self, game_id, rating, review):
+        """Update personal rating and review for a favorite game."""
+        try:
+            favorites = json.loads(self.favorites) if self.favorites else []
+            for game in favorites:
+                if game.get("id") == game_id:
+                    game["personal_rating"] = rating
+                    game["personal_review"] = review
+                    break
+            self.favorites = json.dumps(favorites)
+        except Exception as e:
+            print(f"Error updating review: {e}")
     
     def add_friend(self, friend_id):
         """Add a friend."""
