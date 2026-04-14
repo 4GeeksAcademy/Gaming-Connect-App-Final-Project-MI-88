@@ -627,8 +627,6 @@ export const Profile = () => {
 											})}
 										/>
 									</div>
-										/>
-									</div>
 									<div className="form-group">
 										<label htmlFor="bio">Bio</label>
 										<textarea
