@@ -604,3 +604,191 @@ a {
   background: #dc3545;
   border-color: #dc3545;
 }
+
+/* Badge System */
+.badge-system {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.badge-item {
+  background: #ffdf00;
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: 1px solid #ffd700;
+}
+
+.badge-item.badge-red {
+  background: #f15d5d;
+  background: linear-gradient(135deg, #f15d5d 0%, #d9534f 100%);
+  color: white;
+  border: 1px solid #c9302c;
+}
+
+/* Bio Box */
+.bio-quote-box {
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid #667eea;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+  position: relative;
+  text-align: left;
+}
+
+.bio-quote-box i {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1.2rem;
+  opacity: 0.1;
+}
+
+.bio-quote-box p {
+  margin: 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Interests UI */
+.interests-ui {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.interest-pill {
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+}
+
+.game-pill {
+  background: #4facfe;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+}
+
+.genre-pill {
+  background: #f093fb;
+  background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Playstyle Box */
+.playstyle-box {
+  background: #f1f3f5;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.playstyle-tag {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.playstyle-tag.tryhard { background-color: #e63946; }
+.playstyle-tag.agnostic { background-color: #457b9d; }
+.playstyle-tag.casual { background-color: #2a9d8f; }
+.playstyle-tag.goofin-around { background-color: #f4a261; }
+
+/* Horizontal Game Card Layout */
+.favorites-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-card-horizontal {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s;
+  min-height: 250px;
+}
+
+.game-card-horizontal:hover {
+  transform: scale(1.01);
+}
+
+.game-card-left {
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  border-right: 1px solid #eee;
+}
+
+.game-card-left .game-card-image {
+  height: 200px;
+  width: 100%;
+}
+
+.game-card-basic-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.game-card-right {
+  padding: 20px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card-right h6 {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.review-edit-section label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.review-display-section {
+  color: #444;
+  line-height: 1.5;
+}
+
+.display-rating {
+  font-size: 1.1rem;
+  color: #ff9800;
+}
+
+/* Glassmorphism effects */
+.profile-header, .search-section, .favorites-section, .friends-section {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .game-card-horizontal {
+    grid-template-columns: 1fr;
+  }
+}
