@@ -27,8 +27,9 @@ def handle_sign_up():
     password = body.get("password")
     user_name = (body.get("user_name") or "").strip()
     date_of_birth = (body.get("date_of_birth") or "").strip()
+    security_question_answer = (body.get("security_question_answer") or "").strip()
 
-    if not all([email, password, user_name, date_of_birth]):
+    if not all([email, password, user_name, date_of_birth, security_question_answer]):
         return jsonify({"msg": "all fields required"}), 400
 
     potential_user = db.session.execute(
@@ -49,6 +50,7 @@ def handle_sign_up():
     new_user.password = password
     new_user.user_name = user_name
     new_user.date_of_birth = date_of_birth
+    new_user.security_question_answer = security_question_answer
     new_user.is_active = True
     db.session.add(new_user)
     db.session.commit()
@@ -722,3 +724,29 @@ def get_request_status(other_user_id):
         return jsonify({"status": req.status}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@api.route('/forgot-password', methods=['POST'])
+def handle_forgot_password():
+    body = request.json or {}
+    email = (body.get("email") or "").strip()
+    new_password = body.get("new_password")
+    security_word = body.get("security_word")
+
+    if not all([email, new_password, security_word]):
+        return jsonify({"msg": "all fields required"}), 400
+
+    user = db.session.execute(
+        select(User).where(User.email == email)
+    ).scalar_one_or_none()
+
+    if user is None:
+        return jsonify({"msg": "No account found with that email"}), 404
+
+    if user.security_question_answer != security_word:
+        return jsonify({"msg": "Security answer is incorrect"}), 401
+
+    user.password = new_password
+    db.session.commit()
+
+    return jsonify({"msg": "Password reset successfully"}), 200

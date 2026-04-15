@@ -39,6 +39,7 @@ class User(db.Model):
     favorite_game: Mapped[str] = mapped_column(String(120), nullable=True)
     preferred_genre: Mapped[str] = mapped_column(String(120), nullable=True)
     playstyle: Mapped[str] = mapped_column(String(120), nullable=True)
+    security_question_answer: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     availability: Mapped[List["Availability"]] = relationship(back_populates="user")
 
     def serialize(self):

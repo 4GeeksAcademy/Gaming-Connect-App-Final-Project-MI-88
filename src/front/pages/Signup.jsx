@@ -21,6 +21,7 @@ export const Signup = () => {
 			date_of_birth: (fd.get("date_of_birth") || "").toString().trim(),
 			email: (fd.get("email") || "").toString().trim(),
 			password: fd.get("password"),
+			security_question_answer: (fd.get("security_question_answer") || "").toString().trim(),
 		};
 
 		try {
@@ -111,6 +112,18 @@ export const Signup = () => {
 									id="signup-password"
 									name="password"
 									autoComplete="new-password"
+								/>
+							</div>
+							<div className="mb-3">
+								<label htmlFor="signup-security-question" className="form-label">
+									Security question: What is your mother&apos;s maiden name?
+								</label>
+								<input
+									type="text"
+									className="form-control"
+									id="signup-security-question"
+									name="security_question_answer"
+									autoComplete="off"
 								/>
 							</div>
 							<button type="submit" className="btn btn-primary w-100">

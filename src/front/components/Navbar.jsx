@@ -91,11 +91,6 @@ export const Navbar = () => {
 							</li>
 						</ul>
 					</div>
-					<Link to="/demo">
-						<button type="button" className="btn btn-primary btn-sm">
-							Check the Context in actionn
-						</button>
-					</Link>
 				</div>
 			</div>
 		</nav>
