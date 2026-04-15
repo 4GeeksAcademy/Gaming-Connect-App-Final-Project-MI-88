@@ -73,8 +73,20 @@ export const ForgotPassword = () => {
                                 />
                             </div>
                             <div className="mb-3">
+                                <label htmlFor="forgot-security-word" className="form-label">
+                                    Security question: What is your mother&apos;s maiden name?
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="forgot-security-word"
+                                    name="security_word"
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className="mb-3">
                                 <label htmlFor="forgot-new-password" className="form-label">
-                                    Enter new password
+                                    New password
                                 </label>
                                 <input
                                     type="password"
@@ -94,17 +106,6 @@ export const ForgotPassword = () => {
                                     id="forgot-confirm-password"
                                     name="confirm_password"
                                     autoComplete="new-password"
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="forgot-security-word" className="form-label">
-                                    Security word
-                                </label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="forgot-security-word"
-                                    name="security_word"
                                 />
                             </div>
                             <button type="submit" className="btn btn-primary w-100">
