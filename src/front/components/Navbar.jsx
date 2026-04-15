@@ -31,7 +31,7 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg border-bottom bg-body-tertiary">
 			<div className="container">
-				<Link to="/home">
+				<Link to={localStorage.getItem("token") ? "/home" : "/"}>
 					<span className="navbar-brand mb-0 h1">GuildUp</span>
 				</Link>
 				<div className="ms-auto d-flex align-items-center gap-2 flex-wrap justify-content-end">

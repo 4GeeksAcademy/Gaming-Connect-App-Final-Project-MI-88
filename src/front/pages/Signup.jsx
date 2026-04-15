@@ -17,6 +17,8 @@ export const Signup = () => {
 
 		const fd = new FormData(e.target);
 		const payload = {
+			first_name: (fd.get("first_name") || "").toString().trim(),
+			last_name: (fd.get("last_name") || "").toString().trim(),
 			user_name: (fd.get("user_name") || "").toString().trim(),
 			date_of_birth: (fd.get("date_of_birth") || "").toString().trim(),
 			email: (fd.get("email") || "").toString().trim(),
@@ -67,6 +69,32 @@ export const Signup = () => {
 						<h1 className="h4 mb-4">Sign up</h1>
 						{note ? <p className="small text-muted mb-3">{note}</p> : null}
 						<form onSubmit={signupSubmit}>
+							<div className="row mb-3">
+								<div className="col">
+									<label htmlFor="signup-first_name" className="form-label">
+										First Name
+									</label>
+									<input
+										type="text"
+										className="form-control"
+										id="signup-first_name"
+										name="first_name"
+										autoComplete="given-name"
+									/>
+								</div>
+								<div className="col">
+									<label htmlFor="signup-last_name" className="form-label">
+										Last Name
+									</label>
+									<input
+										type="text"
+										className="form-control"
+										id="signup-last_name"
+										name="last_name"
+										autoComplete="family-name"
+									/>
+								</div>
+							</div>
 							<div className="mb-3">
 								<label htmlFor="signup-user_name" className="form-label">
 									Username

@@ -45,12 +45,17 @@ def handle_sign_up():
         return jsonify({"msg": "That username is taken"}), 400
     days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
+    first_name = (body.get("first_name") or "").strip() or None
+    last_name = (body.get("last_name") or "").strip() or None
+
     new_user = User()
     new_user.email = email
     new_user.password = password
     new_user.user_name = user_name
     new_user.date_of_birth = date_of_birth
     new_user.security_question_answer = security_question_answer
+    new_user.first_name = first_name
+    new_user.last_name = last_name
     new_user.is_active = True
     db.session.add(new_user)
     db.session.commit()
