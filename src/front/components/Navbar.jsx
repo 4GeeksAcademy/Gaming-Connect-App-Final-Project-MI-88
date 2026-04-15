@@ -29,75 +29,37 @@ export const Navbar = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg border-bottom bg-body-tertiary">
-			<div className="container">
-				<Link to="/home">
-					<span className="navbar-brand mb-0 h1">GuildUp</span>
-				</Link>
-				<div className="ms-auto d-flex align-items-center gap-2 flex-wrap justify-content-end">
-					{userName ? (
-						<span className="navbar-text small text-end">{userName}</span>
-					) : null}
-					{userName ? (
-						<button
-							type="button"
-							className="btn btn-outline-secondary btn-sm"
-							onClick={logout}>
-							Log out
-						</button>
-					) : (
-						<>
-							<Link to="/login" className="btn btn-outline-secondary btn-sm">
-								Sign in
-							</Link>
-							<Link to="/signup" className="btn btn-outline-primary btn-sm">
-								Sign up
-							</Link>
-						</>
-					)}
-					<button
-						type="button"
-						className="btn btn-outline-secondary btn-sm"
-						onClick={() => navigate("/profile")}>
-						<i className="fa-solid fa-user me-1"></i>
-						Profile
-					</button>
-
-					<div className="dropdown">
-						<button
-							type="button"
-							className="btn btn-outline-secondary btn-sm dropdown-toggle"
-							data-bs-toggle="dropdown">
-							<i className="fa-solid fa-gear me-1"></i>
-							Settings
-						</button>
-						<ul className="dropdown-menu dropdown-menu-end">
-							<li>
-								<button
-									type="button"
-									className="dropdown-item d-flex justify-content-between align-items-center"
-									onClick={() => setDark((d) => !d)}>
-									<span>Dark mode</span>
-									<span className="badge text-bg-secondary">{dark ? "On" : "Off"}</span>
-								</button>
-							</li>
-							<li>
-								<hr className="dropdown-divider" />
-							</li>
-							<li>
-								<Link className="dropdown-item" to="/profile">
-									Profile settings
-								</Link>
-							</li>
-						</ul>
+		<div className="navbar-pill-container">
+			<div className="navbar-pill">
+				<Link to="/home" className="brand-capsule">
+					<i className="fa-solid fa-earth-americas brand-globe"></i>
+					<div className="brand-text">
+						<span className="text-dark-green">GUILD</span>
+						<span className="text-neon-green">UP</span>
 					</div>
-					<Link to="/demo">
-						<button type="button" className="btn btn-primary btn-sm">
-							Check the Context in actionn
-						</button>
-					</Link>
+				</Link>
+
+				<div className="nav-links-group">
+					<Link to="/home" className="nav-pill-link">Home</Link>
+					<Link to="/profile" className="nav-pill-link">Profile</Link>
+					<Link to="/demo" className="nav-pill-link">Demo</Link>
+					{userName && (
+						<a href="#" className="nav-pill-link" onClick={(e) => { e.preventDefault(); logout(); }}>
+							Logout
+						</a>
+					)}
 				</div>
+
+				{userName ? (
+					<Link to="/profile" className="action-pill-button">
+						{userName}
+					</Link>
+				) : (
+					<Link to="/login" className="action-pill-button">
+						Sign In
+					</Link>
+				)}
 			</div>
-		</nav>
+		</div>
 	);
 };

@@ -169,10 +169,10 @@ export const Home = () => {
 		<>
 			<div className="container text-center mt-5">
 
-				<h1 className="display-2 m-4">Welcome to GuildUp HOME PAGE</h1>
+				<h1 className="main-title m-4">CRAFT YOUR ULTIMATE GUILD.</h1>
 
 				{/* Recommended Gamers Section */}
-				<div className="mt-5 p-4 border rounded bg-primary text-white">
+				<div className="mt-5 p-4 rounded glass-card text-white shadow-lg">
 					<div className="d-flex justify-content-between align-items-center mb-3">
 						<h2 className="mb-0">Recommended Gamers</h2>
 						<div className="dropdown">
@@ -239,7 +239,7 @@ export const Home = () => {
 						<div className="row">
 							{recommendations.map(user => (
 								<div key={user.id} className="col-md-2 mb-3">
-									<div className="card bg-light text-dark h-100">
+									<div className="card glass-card text-white h-100">
 										<div className="card-body text-center">
 											<div className="mb-2">
 												<i className="fa-solid fa-user-circle fa-2x text-primary"></i>
@@ -263,7 +263,7 @@ export const Home = () => {
 				</div>
 
 				{/* Search Section */}
-				<div className="mt-5 p-4 border rounded bg-light">
+				<div className="mt-5 p-4 rounded glass-card">
 					<h2 className="mb-4">Find Gamers to Play With</h2>
 					<form onSubmit={handleSearch} className="row g-3 justify-content-center">
 						<div className="col-md-4">
@@ -356,7 +356,7 @@ export const Home = () => {
 							<div className="row">
 								{searchResults.map(user => (
 									<div key={user.id} className="col-md-4 mb-3">
-										<div className="card">
+										<div className="card glass-card">
 											<div className="card-body">
 												<h5 className="card-title">{user.user_name}</h5>
 												<p className="card-text">

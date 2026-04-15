@@ -46,8 +46,8 @@ export const Login = () => {
 			<div className="row justify-content-center">
 				<div className="col-12 col-sm-10 col-md-7 col-lg-5">
 					<div
-						className="border rounded p-4 bg-white"
-						style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+						className="border rounded p-4 glass-card"
+						style={{ boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)" }}>
 						<h1 className="h4 mb-4">Sign in</h1>
 						{note ? <p className="small text-muted mb-3">{note}</p> : null}
 						<form onSubmit={loginSubmit}>

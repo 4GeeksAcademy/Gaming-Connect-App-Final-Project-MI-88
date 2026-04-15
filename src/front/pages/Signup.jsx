@@ -51,12 +51,12 @@ export const Signup = () => {
 			<div className="row justify-content-center">
 				<div className="col-12 col-sm-10 col-md-7 col-lg-5">
 					<div
-						className="border rounded p-4 bg-white"
-						style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+						className="border rounded p-4 glass-card"
+						style={{ boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)" }}>
 						<div className="mb-3">
 							<Link
 								to="/login"
-								className="text-dark"
+								className="text-white"
 								aria-label="Back to sign in"
 								title="Back to sign in">
 								<i className="fas fa-arrow-left fa-lg"></i>
