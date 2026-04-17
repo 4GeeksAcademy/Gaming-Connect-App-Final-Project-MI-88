@@ -379,17 +379,18 @@ export const Home = () => {
 				</div>
 
 				<h3 className="mt-4 mb-4 text-start">Our Mission and What We Do:</h3>
-				<p className="text-start">1. At GuildUp, we believe every gamer deserves a crew. We're breaking down the barriers that keep players apart by intelligently connecting gamers based on the games they love, the skills they've built, and the time they have to play. Because gaming is always better together!</p>
-				<p className="text-start">2. GuildUp's mission is to eliminate the barriers between gamers and meaningful connection. By matching players across shared games, skill levels, and availability, we create a seamless path from playing solo to active community — making it effortless to find the right person to play with, every time.</p>
-				<p className="text-start">3. GuildUp exists to end the lull of playing solo. We match gamers with the right players — same games, same skill, same schedule — so finding your next teammate is as easy as loading into a match. No awkward outreach, no dead lobbies. Just play.</p>
-
-				<h3 className="mt-4 mb-4 text-start">Features:</h3>
+				<ol className="text-start">
+					<li>At GuildUp, we believe every gamer deserves a crew. We're breaking down the barriers that keep players apart by intelligently connecting gamers based on the games they love, the skills they've built, and the time they have to play. Because gaming is always better together!</li>
+					<li>GuildUp's mission is to eliminate the barriers between gamers and meaningful connection. By matching players across shared games, skill levels, and availability, we create a seamless path from playing solo to active community — making it effortless to find the right person to play with, every time.</li>
+					<li>GuildUp exists to end the lull of playing solo. We match gamers with the right players — same games, same skill, same schedule — so finding your next teammate is as easy as loading into a match. No awkward outreach, no dead lobbies. Just play.</li>
+				</ol>
+				<h3 className="mt-4 mb-4 text-start">Our Features:</h3>
 				<ul className="text-start">
-					<li>Customize your own profile card: Let others know a little bit about yourself, the kinds of games you like to play, your skill level, what platform you play on (PC, PS5, Xbox, etc.), and what time you're available to play. </li>
-					<li>Create your own list of your favorite games that you've played and or are currently playing.</li>
-					<li>Connect with new and old friends manually or by adding them through a list of people you recently played with.</li>
-					<li>The ability to message other gamers (Direct messaging and the abilty to create group chats/guilds to make communication easier).</li>
-					<li>Schedule and set a time to meet up with your friends and game with an event reminder</li>
+					<li>Customize your own profile card: Let others know a little bit about yourself, the kinds of games you like to play, your favorite genre(s), your skill level, what platform you play on (PC, PS5, Xbox, etc.), and what time(s) you're available to play.</li>
+					<li>Create your own list of your favorite games that you've played and or are currently playing, as well as adding your own rating and mini review to said games.</li>
+					<li>Our filters make it easier than ever to find other gamers to play with based on your preferences.</li>
+					<li>Connect with new and old friends by searching for their username or by adding them through a list of people you recently played with. Don't worry, you can also remove friends just as easily.</li>
+					<li>The ability to send messages to other users (Coming soon!)</li>
 				</ul>
 			</div>
 		</>

@@ -628,6 +628,19 @@ export const Profile = () => {
 										/>
 									</div>
 									<div className="form-group">
+										<label htmlFor="lastName">Last Name</label>
+										<input
+											id="lastName"
+											type="text"
+											className="form-control"
+											value={editFormData.last_name || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												last_name: e.target.value
+											})}
+										/>
+									</div>
+									<div className="form-group">
 										<label htmlFor="bio">Bio</label>
 										<textarea
 											id="bio"
