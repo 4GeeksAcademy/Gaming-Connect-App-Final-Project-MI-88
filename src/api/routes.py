@@ -177,6 +177,14 @@ def update_profile():
 
         data = request.json
 
+        if "user_name" in data:
+            target_username = data["user_name"].strip()
+            if target_username and target_username != user.user_name:
+                exists = User.query.filter_by(user_name=target_username).first()
+                if exists:
+                    return jsonify({"error": "Username already taken"}), 400
+                user.user_name = target_username
+
         # Update fields if provided
         if "first_name" in data:
             user.first_name = data["first_name"]
@@ -480,6 +488,28 @@ def search_users():
         return jsonify({"error": str(e)}), 500
 
 
+@api.route('/users/search', methods=['GET'])
+@jwt_required()
+def search_gamers_by_term():
+    """Simple search for users by username."""
+    try:
+        user_id = get_jwt_identity()
+        term = request.args.get('term', '').strip()
+
+        if not term:
+            return jsonify([]), 200
+
+        # Query users whose username contains the term, excluding the current user
+        users = User.query.filter(
+            User.user_name.ilike(f'%{term}%'),
+            User.id != user_id
+        ).all()
+
+        return jsonify([user.serialize() for user in users]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @api.route('/recommendations', methods=['GET'])
 @jwt_required()
 def get_recommendations():
@@ -495,51 +525,40 @@ def get_recommendations():
         age_range = int(request.args.get('age_range', 5))
         specific_game = request.args.get('specific_game', '').strip()
 
-        # Calculate current user's age
-        if not current_user.date_of_birth:
-            return jsonify({"error": "User date of birth not set"}), 400
+        user_age = None
+        today = datetime.today()
+        if current_user.date_of_birth:
+            try:
+                birth_date = datetime.strptime(
+                    current_user.date_of_birth, '%Y-%m-%d')
+                user_age = today.year - birth_date.year - \
+                    ((today.month, today.day) < (birth_date.month, birth_date.day))
+            except ValueError:
+                pass
 
-        try:
-            birth_date = datetime.strptime(
-                current_user.date_of_birth, '%Y-%m-%d')
-            today = datetime.today()
-            user_age = today.year - birth_date.year - \
-                ((today.month, today.day) < (birth_date.month, birth_date.day))
-        except ValueError:
-            return jsonify({"error": "Invalid date of birth format"}), 400
-
-        # Get current user's favorites
         user_favorites = json.loads(
             current_user.favorites) if current_user.favorites else []
-        if not user_favorites:
-            return jsonify([]), 200  # No favorites, no recommendations
 
-        # Get all other users
         other_users = User.query.filter(User.id != user_id).all()
         recommendations = []
 
         for user in other_users:
-            if not user.date_of_birth:
-                continue
+            other_age = None
+            if user.date_of_birth:
+                try:
+                    user_birth = datetime.strptime(user.date_of_birth, '%Y-%m-%d')
+                    other_age = today.year - user_birth.year - \
+                        ((today.month, today.day) < (user_birth.month, user_birth.day))
+                except ValueError:
+                    pass
 
-            try:
-                user_birth = datetime.strptime(user.date_of_birth, '%Y-%m-%d')
-                other_age = today.year - user_birth.year - \
-                    ((today.month, today.day) < (user_birth.month, user_birth.day))
-            except ValueError:
-                continue
+            if age_range != -1 and user_age is not None and other_age is not None:
+                if abs(user_age - other_age) > age_range:
+                    continue
 
-            # Check age range (skip if -1, meaning any age)
-            if age_range != -1 and abs(user_age - other_age) > age_range:
-                continue
-
-            # Get other user's favorites
             other_favorites = json.loads(
                 user.favorites) if user.favorites else []
-            if not other_favorites:
-                continue
 
-            # Find matching games
             matching_games = []
             for user_game in user_favorites:
                 user_game_name = user_game.get('name', '').lower()
@@ -549,9 +568,7 @@ def get_recommendations():
                     other_game_name = other_game.get('name', '').lower()
                     other_skill = other_game.get('skill_level', 1)
 
-                    # Check game match
                     if specific_game:
-                        # Focus on specific game
                         if user_game_name == specific_game.lower() and other_game_name == specific_game.lower():
                             if skill_range == -1 or abs(user_skill - other_skill) <= skill_range:
                                 matching_games.append({
@@ -560,7 +577,6 @@ def get_recommendations():
                                     'other_skill': other_skill
                                 })
                     else:
-                        # Any matching game
                         if user_game_name == other_game_name:
                             if skill_range == -1 or abs(user_skill - other_skill) <= skill_range:
                                 matching_games.append({
@@ -569,17 +585,16 @@ def get_recommendations():
                                     'other_skill': other_skill
                                 })
 
-            if matching_games:
-                recommendations.append({
-                    'id': user.id,
-                    'user_name': user.user_name,
-                    'email': user.email,
-                    'favorites': other_favorites,
-                    'matching_games': matching_games,
-                    'age': other_age
-                })
+            recommendations.append({
+                'id': user.id,
+                'user_name': user.user_name,
+                'email': user.email,
+                'profile_picture_url': user.profile_picture_url,
+                'favorites': other_favorites,
+                'matching_games': matching_games,
+                'age': other_age
+            })
 
-        # Sort by number of matching games (most matches first)
         recommendations.sort(key=lambda x: len(
             x['matching_games']), reverse=True)
 

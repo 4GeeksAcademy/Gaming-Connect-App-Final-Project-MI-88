@@ -142,7 +142,7 @@ export const Home = () => {
 			})
 			const data = await response.json()
 			if (response.ok) {
-				setRecommendations(data.slice(0, 5)) // Show only 5 recommendations
+				setRecommendations(data.slice(0, 6))
 			}
 		} catch (error) {
 			console.error('Failed to load recommendations:', error)
@@ -169,18 +169,20 @@ export const Home = () => {
 		<>
 			<div className="container text-center mt-5">
 
-				<h1 className="display-2 m-4">Welcome to GuildUp HOME PAGE</h1>
+				<h1 className="main-title m-4">
+					<span className="text-white">CRAFT YOUR ULTIMATE</span> <span className="text-neon-green">GUILD.</span>
+				</h1>
 
 				{/* Recommended Gamers Section */}
-				<div className="mt-5 p-4 border rounded bg-primary text-white">
+				<div className="mt-5 p-4 rounded glass-card text-white shadow-lg">
 					<div className="d-flex justify-content-between align-items-center mb-3">
-						<h2 className="mb-0">Recommended Gamers</h2>
+						<h2 className="mb-0 section-title">Recommended Gamers</h2>
 						<div className="dropdown">
-							<button className="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-								<i className="fa-solid fa-sliders me-1"></i>
+							<button className="glass-pill-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<i className="fa-solid fa-sliders"></i>
 								Settings
 							</button>
-							<ul className="dropdown-menu dropdown-menu-end">
+							<ul className="dropdown-menu dropdown-menu-end glass-card p-3 shadow-lg" style={{ right: '0', minWidth: '250px' }}>
 								<li className="dropdown-header">Skill Level Range (±)</li>
 								<li>
 									<select 
@@ -239,32 +241,43 @@ export const Home = () => {
 						<div className="row">
 							{recommendations.map(user => (
 								<div key={user.id} className="col-md-2 mb-3">
-									<div className="card bg-light text-dark h-100">
-										<div className="card-body text-center">
-											<div className="mb-2">
-												<i className="fa-solid fa-user-circle fa-2x text-primary"></i>
+									<div className="card glass-card text-white h-100 border-0 shadow-lg">
+										<div className="card-body text-center p-3">
+											<div className="mb-3 position-relative">
+												{user.profile_picture_url ? (
+													<img 
+														src={user.profile_picture_url} 
+														alt={user.user_name} 
+														className="rounded-circle"
+														style={{ width: '70px', height: '70px', objectFit: 'cover', border: '3px solid #00ff88', boxShadow: '0 0 15px rgba(0, 255, 136, 0.4)' }}
+													/>
+												) : (
+													<div className="mx-auto rounded-circle d-flex align-items-center justify-content-center" style={{ width: '70px', height: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,255,136,0.3)' }}>
+														<i className="fa-solid fa-user fa-2x text-neon-green opacity-50"></i>
+													</div>
+												)}
 											</div>
-											<h6 className="card-title">{user.user_name}</h6>
-											<p className="card-text small">
-												{user.favorites.length} games
+											<h6 className="card-title text-neon-green fw-bold mb-1">{user.user_name}</h6>
+											<p className="card-text small text-white-50 mb-3">
+												{user.favorites.length} Games
 											</p>
 											<button
-												className="btn btn-primary btn-sm"
+												className="btn btn-outline-primary btn-sm rounded-pill px-3"
 												onClick={() => navigate(`/profile/${user.id}`)}
-											>View Profile</button>
+											>View</button>
 										</div>
 									</div>
 								</div>
 							))}
 						</div>
 					) : (
-						<p className="text-center py-4">No recommendations available. Try adjusting your settings!</p>
+						<p className="text-center py-4 extra-text">No recommendations available. Try adjusting your settings!</p>
 					)}
 				</div>
 
 				{/* Search Section */}
-				<div className="mt-5 p-4 border rounded bg-light">
-					<h2 className="mb-4">Find Gamers to Play With</h2>
+				<div className="mt-5 p-4 rounded glass-card text-white">
+					<h2 className="mb-4 section-title">Find Gamers to Play With</h2>
 					<form onSubmit={handleSearch} className="row g-3 justify-content-center">
 						<div className="col-md-4">
 							<label htmlFor="username" className="form-label">Username (partial match)</label>
@@ -356,14 +369,29 @@ export const Home = () => {
 							<div className="row">
 								{searchResults.map(user => (
 									<div key={user.id} className="col-md-4 mb-3">
-										<div className="card">
+										<div className="card glass-card h-100 text-center">
 											<div className="card-body">
-												<h5 className="card-title">{user.user_name}</h5>
-												<p className="card-text">
-													{user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : 'Name not provided'}
+												<div className="mb-3">
+													{user.profile_picture_url ? (
+														<img 
+															src={user.profile_picture_url} 
+															alt={user.user_name} 
+															className="rounded-circle"
+															style={{ width: '80px', height: '80px', objectFit: 'cover', border: '3px solid #00ff88', boxShadow: '0 0 15px rgba(0, 255, 136, 0.3)' }}
+														/>
+													) : (
+														<div className="mx-auto bg-dark rounded-circle d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', border: '1px solid rgba(255,255,255,0.1)' }}>
+															<i className="fa-solid fa-user fa-2x text-neon-green"></i>
+														</div>
+													)}
+												</div>
+												<h5 className="card-title text-neon-green">{user.user_name}</h5>
+												<p className="card-text small text-white opacity-75">
+													{user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : 'Gamer'}
 												</p>
-												<p className="card-text">
-													Favorites: {user.favorites.length} games
+												<p className="card-text small mb-3">
+													<i className="fas fa-gamepad me-2"></i>
+													{user.favorites.length} {user.favorites.length === 1 ? 'Game' : 'Games'}
 												</p>
 												<button
 												className="btn btn-outline-primary btn-sm"
@@ -378,20 +406,30 @@ export const Home = () => {
 					)}
 				</div>
 
-				<h3 className="mt-4 mb-4 text-start">Our Mission and What We Do:</h3>
-				<ol className="text-start">
-					<li>At GuildUp, we believe every gamer deserves a crew. We're breaking down the barriers that keep players apart by intelligently connecting gamers based on the games they love, the skills they've built, and the time they have to play. Because gaming is always better together!</li>
-					<li>GuildUp's mission is to eliminate the barriers between gamers and meaningful connection. By matching players across shared games, skill levels, and availability, we create a seamless path from playing solo to active community — making it effortless to find the right person to play with, every time.</li>
-					<li>GuildUp exists to end the lull of playing solo. We match gamers with the right players — same games, same skill, same schedule — so finding your next teammate is as easy as loading into a match. No awkward outreach, no dead lobbies. Just play.</li>
-				</ol>
-				<h3 className="mt-4 mb-4 text-start">Our Features:</h3>
-				<ul className="text-start">
-					<li>Customize your own profile card: Let others know a little bit about yourself, the kinds of games you like to play, your favorite genre(s), your skill level, what platform you play on (PC, PS5, Xbox, etc.), and what time(s) you're available to play.</li>
-					<li>Create your own list of your favorite games that you've played and or are currently playing, as well as adding your own rating and mini review to said games.</li>
-					<li>Our filters make it easier than ever to find other gamers to play with based on your preferences.</li>
-					<li>Connect with new and old friends by searching for their username or by adding them through a list of people you recently played with. Don't worry, you can also remove friends just as easily.</li>
-					<li>The ability to send messages to other users (Coming soon!)</li>
-				</ul>
+				<div className="row mt-5 mb-5">
+					<div className="col-md-6">
+						<div className="mission-feature-box h-100 text-white">
+							<h3 className="mb-4 text-start section-title">Our Mission</h3>
+							<ul className="bubble-list text-start">
+								<li>At GuildUp, we believe every gamer deserves a crew. We're breaking down the barriers that keep players apart by intelligently connecting gamers based on the games they love, the skills they've built, and the time they have to play. Because gaming is always better together!</li>
+								<li>GuildUp's mission is to eliminate the barriers between gamers and meaningful connection. By matching players across shared games, skill levels, and availability, we create a seamless path from playing solo to active community — making it effortless to find the right person to play with, every time.</li>
+								<li>GuildUp exists to end the lull of playing solo. We match gamers with the right players — same games, same skill, same schedule — so finding your next teammate is as easy as loading into a match. No awkward outreach, no dead lobbies. Just play.</li>
+							</ul>
+						</div>
+					</div>
+					<div className="col-md-6">
+						<div className="mission-feature-box h-100 text-white">
+							<h3 className="mb-4 text-start section-title">Our Features</h3>
+							<ul className="bubble-list text-start">
+								<li>Customize your own profile card: Let others know a little bit about yourself, the kinds of games you like to play, your favorite genre(s), your skill level, what platform you play on (PC, PS5, Xbox, etc.), and what time(s) you're available to play.</li>
+								<li>Create your own list of your favorite games that you've played and or are currently playing, as well as adding your own rating and mini review to said games.</li>
+								<li>Our filters make it easier than ever to find other gamers to play with based on your preferences.</li>
+								<li>Connect with new and old friends by searching for their username or by adding them through a list of people you recently played with. Don't worry, you can also remove friends just as easily.</li>
+								<li>The ability to send messages to other users (Coming soon!)</li>
+							</ul>
+						</div>
+					</div>
+				</div>
 			</div>
 		</>
 	);

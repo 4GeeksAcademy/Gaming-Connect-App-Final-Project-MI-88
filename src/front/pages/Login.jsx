@@ -46,52 +46,67 @@ export const Login = () => {
 			<div className="row justify-content-center">
 				<div className="col-12 col-sm-10 col-md-7 col-lg-5">
 					<div
-						className="border rounded p-4 bg-white"
-						style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-						<h1 className="h4 mb-4">Sign in</h1>
-						{note ? <p className="small text-muted mb-3">{note}</p> : null}
-						<form onSubmit={loginSubmit}>
+						className="border rounded p-5 glass-card text-white text-center"
+						style={{ boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.45)" }}>
+						<div className="mb-4">
+							<i className="fa-solid fa-circle-nodes brand-globe fa-3x mb-3 text-neon-green"></i>
+							<h1 className="main-title h2">
+								<span className="text-white">Guild</span><span className="text-neon-green">Up</span>
+							</h1>
+						</div>
+
+						<h2 className="brand-text h4 mb-4 text-white">Sign in</h2>
+						
+						{note ? <p className="alert alert-danger py-2 small">{note}</p> : null}
+
+						<form onSubmit={loginSubmit} className="text-start">
 							<div className="mb-3">
-								<label htmlFor="login-email" className="form-label">
+								<label htmlFor="login-email" className="form-label text-white">
 									Email
 								</label>
 								<input
 									type="email"
-									className="form-control"
+									className="form-control bubble-input"
 									id="login-email"
 									name="email"
 									autoComplete="email"
+									required
 								/>
 							</div>
-							<div className="mb-3">
-								<label htmlFor="login-password" className="form-label">
+							<div className="mb-4">
+								<label htmlFor="login-password" className="form-label text-white">
 									Password
 								</label>
 								<input
 									type="password"
-									className="form-control"
+									className="form-control bubble-input"
 									id="login-password"
 									name="password"
 									autoComplete="current-password"
+									required
 								/>
 							</div>
-							<button type="submit" className="btn btn-primary w-100">
+							<button type="submit" className="btn btn-primary w-100 py-2 fw-bold">
 								Log in
 							</button>
 						</form>
 
-						<div className="mt-3">
-							<Link to="/signup" className="btn btn-outline-secondary w-100">
-								Create an account
+						<div className="mt-4">
+							<Link to="/signup" className="text-neon-green text-decoration-none small fw-bold">
+								Don't have an account? Create one
 							</Link>
 						</div>
 
-						<div className="text-center mt-3">
-							<Link to="/forgotpassword">Forgot password?</Link>
+						<div className="mt-2">
+							<Link to="/forgotpassword" style={{ color: "rgba(255,255,255,0.6)" }} className="small text-decoration-none">
+								Forgot password?
+							</Link>
 						</div>
 
-						<div className="text-center mt-3">
-							<Link to="/">Back home</Link>
+						<div className="mt-4">
+							<Link to="/" className="btn btn-outline-light btn-sm px-4">
+								Back Home
+							</Link>
 						</div>
 					</div>
 				</div>
