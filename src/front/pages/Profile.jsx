@@ -69,6 +69,7 @@ export const Profile = () => {
 			if (response.ok) {
 				setUserProfile(data)
 				setEditFormData({
+					user_name: data.user_name || "",
 					first_name: data.first_name || "",
 					last_name: data.last_name || "",
 					bio: data.bio || "",
@@ -535,11 +536,7 @@ export const Profile = () => {
 
 						<div className="profile-info">
 							<h1 className="gamertag">{userProfile.user_name || "Username"}</h1>
-							<div className="badge-system">
-								<span className="badge-item">Weekend Warrior</span>
-								<span className="badge-item">Friendly Gamer</span>
-								<span className="badge-item badge-red">Killamanjaro</span>
-							</div>
+
 							<p className="user-email">{userProfile.email}</p>
 							<div className="user-details">
 								{userProfile.first_name && (
@@ -566,29 +563,37 @@ export const Profile = () => {
 									)}
 								</div>
 
-								{userProfile.playstyle && (
-									<div className="playstyle-box">
-										<strong>Playstyle:</strong>
-										<span className={`playstyle-tag ${userProfile.playstyle.toLowerCase().replace(" ", "-")}`}>
-											{userProfile.playstyle}
-										</span>
-									</div>
-								)}
+								<div className="gaming-stats-container">
+									{userProfile.playstyle && (
+										<div className="stat-info-group">
+											<strong>Playstyle</strong>
+											<span className={`playstyle-tag ${userProfile.playstyle.toLowerCase().replace(" ", "-")}`}>
+												{userProfile.playstyle}
+											</span>
+										</div>
+									)}
 
-								{userProfile.availability && userProfile.availability.some(availabilityRow => availabilityRow.start_time && availabilityRow.end_time) && (
-									<div>
-										<strong>Availability:</strong>
-										{userProfile.availability
-											.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
-											.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
-											.map(availabilityRow => (
-												<p key={availabilityRow.id}>
-													{availabilityRow.day.charAt(0).toUpperCase() + availabilityRow.day.slice(1)}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}
-												</p>
-											))
-										}
-									</div>
-								)}
+									{userProfile.availability && userProfile.availability.some(availabilityRow => availabilityRow.start_time && availabilityRow.end_time) && (
+										<div className="stat-info-group">
+											<strong>Availability</strong>
+											<div className="availability-summary">
+												{userProfile.availability
+													.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
+													.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
+													.slice(0, 2) // Just show first 2 for the "card" look
+													.map(availabilityRow => (
+														<p key={availabilityRow.id}>
+															<small>{availabilityRow.day.substring(0, 3).toUpperCase()}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}</small>
+														</p>
+													))
+												}
+												{userProfile.availability.filter(a => a.start_time && a.end_time).length > 2 && (
+													<p><small className="text-neon-green">+ More</small></p>
+												)}
+											</div>
+										</div>
+									)}
+								</div>
 							</div>
 
 							{!isEditingProfile ? (
@@ -614,6 +619,19 @@ export const Profile = () => {
 								</button>
 							) : (
 								<form onSubmit={handleProfileUpdate} className="edit-profile-form">
+									<div className="form-group">
+										<label htmlFor="user_name">Username</label>
+										<input
+											id="user_name"
+											type="text"
+											className="form-control"
+											value={editFormData.user_name || ""}
+											onChange={(e) => setEditFormData({
+												...editFormData,
+												user_name: e.target.value
+											})}
+										/>
+									</div>
 									<div className="form-group">
 										<label htmlFor="firstName">First Name</label>
 										<input

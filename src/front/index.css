@@ -6,11 +6,12 @@ a {
   padding: 20px;
   min-height: 100vh;
   background: transparent;
+  font-family: "Orbitron", sans-serif !important;
 }
 
 .profile-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.15fr 0.85fr;
   gap: 30px;
   max-width: 1400px;
   margin: 0 auto;
@@ -24,10 +25,13 @@ a {
 }
 
 .profile-header {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px) !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(0, 255, 136, 0.3) !important;
+  padding: 40px !important;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.1) !important;
+  margin-bottom: 30px !important;
 }
 
 .profile-picture-section {
@@ -39,15 +43,25 @@ a {
 }
 
 .profile-picture {
-  width: 150px;
+  width: 170px !important;
+  height: 170px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 4px solid #00ff88 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.4) !important;
+  margin-bottom: 20px !important;
   height: 150px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #667eea;
+  border: 4px solid #00ff88;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .profile-picture img {
@@ -63,7 +77,7 @@ a {
   align-items: center;
   justify-content: center;
   font-size: 60px;
-  color: #667eea;
+  color: #00ff88;
 }
 
 .picture-actions {
@@ -76,24 +90,24 @@ a {
 }
 
 .gamertag {
-  color: #333;
   font-size: 2.5rem;
-  font-weight: bold;
   margin: 15px 0 5px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #667eea;
+  color: #00ff88 !important;
+  font-family: "Outfit", sans-serif !important;
+  font-weight: 900 !important;
 }
 
 .user-email {
-  color: #666;
+  color: #ffffff;
   font-size: 1.1rem;
   margin-bottom: 15px;
 }
 
 .user-details {
   margin: 15px 0;
-  color: #555;
+  color: #ffffff;
   font-size: 0.95rem;
 }
 
@@ -111,7 +125,7 @@ a {
 
 .edit-profile-form label {
   font-weight: 600;
-  color: #333;
+  color: #ffffff;
   margin-bottom: 5px;
 }
 
@@ -150,13 +164,13 @@ a {
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #00ff88;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .search-btn {
   padding: 12px 24px;
-  background: #667eea;
+  background: #00ff88;
   border: none;
   border-radius: 8px;
   color: white;
@@ -166,7 +180,7 @@ a {
 }
 
 .search-btn:hover:not(:disabled) {
-  background: #764ba2;
+  background: #00cc6a;
 }
 
 .search-btn:disabled {
@@ -183,7 +197,7 @@ a {
   font-weight: 600;
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #00ff88;
 }
 
 .search-results-grid {
@@ -278,19 +292,22 @@ a {
 }
 
 .favorites-section h2,
-.friends-section h2 {
+.friends-section h2,
+.search-gamers-section h2 {
   color: #333;
   font-size: 1.8rem;
-  font-weight: bold;
+  font-weight: 900;
   margin-bottom: 20px;
-  color: #667eea;
+  color: #00ff88;
   padding-bottom: 10px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #00ff88;
+  font-family: "Outfit", sans-serif !important;
+  text-transform: uppercase;
 }
 
 .empty-message {
   text-align: center;
-  color: #999;
+  color: #ffffff;
   font-style: italic;
   padding: 30px 0;
 }
@@ -418,14 +435,14 @@ a {
 
 .friend-info h5 {
   margin: 0 0 5px;
-  color: #333;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .friend-info p {
   margin: 0;
   font-size: 0.85rem;
-  color: #666;
+  color: #ffffff;
 }
 
 .friend-item .btn {
@@ -446,7 +463,7 @@ a {
 .profile-loading .spinner-border {
   width: 3rem;
   height: 3rem;
-  color: #667eea;
+  color: #00ff88;
 }
 
 /* Responsive Design */
@@ -556,13 +573,13 @@ a {
 
 /* Button Variations */
 .btn-primary {
-  background: #667eea;
-  border-color: #667eea;
+  background: #00ff88;
+  border-color: #00ff88;
 }
 
 .btn-primary:hover {
-  background: #764ba2;
-  border-color: #764ba2;
+  background: #00cc6a;
+  border-color: #00cc6a;
 }
 
 .btn-secondary {
@@ -586,13 +603,13 @@ a {
 }
 
 .btn-outline-primary {
-  color: #667eea;
-  border-color: #667eea;
+  color: #00ff88;
+  border-color: #00ff88;
 }
 
 .btn-outline-primary:hover {
-  background: #667eea;
-  border-color: #667eea;
+  background: #00ff88;
+  border-color: #00ff88;
 }
 
 .btn-outline-danger {
@@ -634,8 +651,14 @@ a {
 
 /* Bio Box */
 .bio-quote-box {
-  background: rgba(102, 126, 234, 0.05);
-  border-left: 4px solid #667eea;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 25px 35px !important;
+  margin: 30px 0 !important;
+  border-radius: 20px !important;
+  position: relative;
+  text-align: center !important;
+  border: none !important;
   padding: 15px 20px;
   margin: 20px 0;
   border-radius: 0 12px 12px 0;
@@ -654,37 +677,49 @@ a {
 
 .bio-quote-box p {
   margin: 0;
-  color: #444;
+  color: #ffffff;
   line-height: 1.6;
 }
 
 /* Interests UI */
 .interests-ui {
-  display: flex;
-  justify-content: center;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 25px 0 !important;
+
   gap: 10px;
   margin: 15px 0;
 }
 
 .interest-pill {
-  padding: 6px 16px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: white;
+  width: 100% !important;
+  max-width: 350px !important;
+  padding: 12px 20px !important;
+  border-radius: 12px !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  font-family: "Orbitron", sans-serif !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+
 }
 
 .game-pill {
-  background: #4facfe;
-  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  background: #00ff88;
+  background: linear-gradient(to right, #00ff88 0%, #00cc6a 100%);
 }
 
 .genre-pill {
-  background: #f093fb;
-  background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+  background: #00ff88;
+  background: linear-gradient(120deg, #00ff88 0%, #009e54 100%);
 }
 
 /* Playstyle Box */
@@ -705,12 +740,103 @@ a {
   color: white;
 }
 
-.playstyle-tag.tryhard { background-color: #e63946; }
-.playstyle-tag.agnostic { background-color: #457b9d; }
-.playstyle-tag.casual { background-color: #2a9d8f; }
-.playstyle-tag.goofin-around { background-color: #f4a261; }
+.playstyle-tag.tryhard { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
+.playstyle-tag.agnostic { background: linear-gradient(135deg, #6a11cb, #2575fc) !important; }
+.playstyle-tag.casual { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+.playstyle-tag.goofin-around { background: linear-gradient(135deg, #f09819, #edde5d) !important; }
+
+/* Edit Profile Form Styles */
+.edit-profile-form {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+}
+
+.edit-profile-form .form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.edit-profile-form label {
+  color: #00ff88;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.edit-profile-form .form-control,
+.edit-profile-form .form-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  padding: 10px 15px !important;
+}
+
+.edit-profile-form .form-control:focus,
+.edit-profile-form .form-select:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2) !important;
+  outline: none !important;
+}
+
+.edit-profile-form select option {
+  background-color: #1a1a1a !important;
+  color: white !important;
+}
+
+.edit-profile-form textarea.form-control {
+  min-height: 100px;
+}
+
+.edit-profile-form .button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
 
 /* Horizontal Game Card Layout */
+.gaming-stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.stat-info-group {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-info-group strong {
+  color: #00ff88;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.availability-summary p {
+  margin: 0;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.text-neon-green {
+  color: #00ff88 !important;
+}
+
 .favorites-grid {
   display: flex;
   flex-direction: column;
@@ -781,12 +907,14 @@ a {
 }
 
 /* Glassmorphism effects */
-.profile-header, .search-section, .favorites-section, .friends-section {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+.profile-header, .search-section, .favorites-section, .friends-section, .friend-item, .game-card-horizontal, .game-card-left, .game-card-right {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(0, 255, 136, 0.2) !important;
+  color: white !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
 }
 
 @media (max-width: 768px) {
@@ -802,8 +930,8 @@ a {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1050;
-  width: auto;
-  min-width: 850px;
+  width: 95%;
+  max-width: 1320px;
 }
 
 .navbar-pill {
@@ -811,10 +939,10 @@ a {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 100px;
-  padding: 6px 30px 6px 6px;
+  padding: 6px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.15), 0 0 5px rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -852,6 +980,12 @@ a {
 .navbar-pill .brand-globe {
   color: black;
   font-size: 1.3rem;
+  animation: rotate-slow 10s linear infinite;
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .navbar-pill .action-pill-button {
@@ -880,6 +1014,55 @@ a {
   .nav-links-group {
     display: none !important;
   }
+}
+
+.bg-neon-green {
+  background-color: #00ff88 !important;
+}
+
+.glass-pill-button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.glass-pill-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+  color: white;
+}
+
+.glass-pill-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 12px 20px !important;
+  transition: all 0.3s ease !important;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2) !important;
+  outline: none !important;
 }
 
 /* Added fixed background and padding to body */
@@ -929,7 +1112,7 @@ body {
 
 /* Main Title Styling */
 .main-title {
-  font-family: " Readex Pro\, sans-serif;
+  font-family: "Readex Pro", sans-serif;
  font-weight: 700;
  font-size: 4.5rem;
  color: #ffffff;
@@ -950,7 +1133,7 @@ body {
 
 /* Main Title Styling */
 .main-title {
-  font-family: " Readex Pro\, sans-serif;
+  font-family: "Readex Pro", sans-serif;
  font-weight: 700;
  font-size: 4.5rem;
  color: #ffffff;
@@ -963,18 +1146,18 @@ body {
   backdrop-filter: blur(15px) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 24px !important;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1), 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15), 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
 }
 
 .main-title {
-  font-family: " Readex Pro\, sans-serif !important;
+  font-family: "Readex Pro", sans-serif !important;
  font-weight: 700 !important;
  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Ultra-Bold Branding Update */
 .brand-text, .main-title {
-  font-family: " Outfit\, sans-serif !important;
+  font-family: "Outfit", sans-serif !important;
  font-weight: 900 !important;
  text-transform: uppercase;
 }
@@ -1029,6 +1212,7 @@ html, body {
  color: #f0f0f0;
  margin: 0;
  padding: 0;
+ font-weight: 100 !important;
 }
 
 body {
@@ -1051,14 +1235,14 @@ body {
 }
 
 .main-title {
-  font-family: "Orbitron", sans-serif !important;
- font-weight: 900 !important;
- font-size: 4.5rem;
- color: #ffffff;
- text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.2);
- letter-spacing: 5px;
- text-transform: uppercase;
- margin-bottom: 2rem;
+  font-family: "Outfit", sans-serif !important;
+  font-weight: 900 !important;
+  font-size: 4.5rem;
+  color: #00ff88 !important;
+  text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
 }
 
 .brand-text {
@@ -1076,7 +1260,16 @@ body {
   color: #ffffff !important;
 }
 
-.navbar-pill .brand-globe { color: #ffffff !important; }
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.navbar-pill .brand-globe { 
+  color: #ffffff !important; 
+  display: inline-block;
+  animation: logo-spin 10s linear infinite;
+}
 .navbar-pill .text-dark-green { color: #ffffff !important; }
 .navbar-pill .text-neon-green { color: #00ff88 !important; }
 
@@ -1105,8 +1298,9 @@ body {
 }
 
 /* make text white */
-.card p, .card h1, .card h2, .card h3, .card h4, .card h5, .card h6, .card span, .card label {
+.card p, .card h1, .card h2, .card h3, .card h4, .card h5, .card h6, .card span, .card label, .card-title {
   color: #ffffff !important;
+  font-family: "Outfit", sans-serif !important;
 }
 
 /* inputs styling */
@@ -1119,4 +1313,464 @@ input.form-control, textarea.form-control, select.form-select {
 input.form-control:focus {
   background: rgba(255, 255, 255, 0.1) !important;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+::placeholder {
+  color: #bbbbbb !important;
+  opacity: 1;
+}
+
+.mission-feature-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 25px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  margin-bottom: 30px;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+.bubble-list {
+  list-style: none;
+  padding: 0;
+}
+
+.bubble-list li {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.bubble-list li:hover {
+  transform: translateX(10px);
+  background: rgba(0, 255, 136, 0.15);
+}
+
+.landing-image {
+  border: 12px solid #222;
+  border-right-color: #555;
+  border-bottom-color: #555;
+  border-left-color: #111;
+  border-top-color: #111;
+  box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8), 10px 10px 30px rgba(0,0,0,0.6);
+  border-radius: 12px;
+  max-width: 80%;
+  transition: transform 0.3s;
+}
+
+.landing-image:hover {
+  transform: scale(1.02);
+}
+
+.section-title {
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 1.5rem !important;
+  color: #ffffff !important;
+  text-shadow: 
+    -1px -1px 0 #333333, 
+    1px 1px 0 #333333;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+@font-face {
+  font-family: 'Nexa';
+  src: url('./assets/Nexa-ExtraLight.ttf') format('truetype');
+}
+
+.bubble-list li, .mission-feature-box p, .extra-text, .empty-message, .edit-profile-form .form-control, .edit-profile-form .form-select, .profile-container p {
+  font-family: 'Nexa', "Outfit", sans-serif !important;
+  font-weight: 100 !important;
+  letter-spacing: 1px;
+}
+
+/* Profile Green Theme & Styling */
+.profile-container .btn-primary, 
+.profile-container .badge-item:not(.badge-red) {
+  background-color: #00ff88 !important;
+  border-color: #00ff88 !important;
+  color: #0a0a0a !important;
+  font-weight: bold;
+}
+
+.profile-container .btn-outline-primary {
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+}
+
+.edit-profile-form {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  padding: 25px;
+  border-radius: 24px;
+  margin-top: 20px;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.edit-profile-form label {
+  color: #00ff88 !important;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.edit-profile-form .form-control {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 12px;
+}
+
+.edit-profile-form .btn-secondary {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.glass-pill-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: 0.2s;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.glass-pill-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.03);
+  color: #ffffff !important;
+}
+
+.bubble-input {
+  border-radius: 50px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  padding: 12px 25px !important;
+  transition: all 0.3s ease !important;
+}
+
+.bubble-input:focus {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3) !important;
+  outline: none !important;
+}
+
+.bubble-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dropdown-menu.glass-card {
+  z-index: 10000 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  margin-top: 10px !important;
+}
+
+.dropdown-header {
+  color: #00ff88 !important;
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 0 10px 10px !important;
+}
+
+.splash-logo-container {
+  margin: 60px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.splash-logo {
+  font-size: 15rem !important;
+  color: white !important;
+  animation: rotate-slow 20s linear infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+  transition: all 0.5s ease;
+}
+
+.splash-logo:hover {
+  filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.5));
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .splash-logo {
+    font-size: 8rem !important;
+  }
+}
+
+.summary-note-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  padding: 12px 24px;
+  border-radius: 100px;
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.summary-note-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05);
+}
+
+/* REDESIGNED GAME CARD STYLES */
+.game-card-horizontal {
+  display: flex !important;
+  background: transparent !important;
+  flex-direction: row !important;
+
+
+
+
+  overflow: hidden;
+  margin-bottom: 25px;
+  min-height: 280px;
+  gap: 30px !important;
+  overflow: visible !important;
+}
+
+.game-card-left {
+  flex: 0 0 250px !important;
+  padding: 0 !important;
+  border-radius: 24px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  overflow: hidden;
+}
+
+.game-card-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.game-card-horizontal:hover .game-card-art {
+  transform: scale(1.05);
+}
+
+.game-card-right {
+  flex: 1;
+  padding: 25px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.game-card-title {
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 1.5rem !important;
+  color: #ffffff !important;
+  margin-bottom: 8px !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-meta-row {
+  display: flex;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+}
+
+.game-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-meta-item i {
+  color: #00ff88;
+}
+
+.skill-badge {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: "Orbitron", sans-serif;
+}
+
+.user-review-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.edit-mode-container label {
+  font-family: "Orbitron", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .game-card-horizontal {
+    flex-direction: column !important;
+  }
+  .game-card-left {
+    flex: 0 0 200px !important;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Profile Edit Form Legibility Fix */
+.profile-container .form-control,
+.profile-container .form-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.profile-container select option {
+  background-color: #1a1a1a !important;
+  color: white !important;
+}
+
+.profile-container label {
+  color: #00ff88 !important;
+}
+/* Information Pages Styling (FAQ, About, Contact) */
+.info-page-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px 80px;
+}
+
+.info-section-glass {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(0, 255, 136, 0.2) !important;
+  border-radius: 24px !important;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.info-page-title {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  color: #00ff88;
+  text-transform: uppercase;
+  margin-bottom: 40px !important;
+  letter-spacing: 3px;
+}
+
+.info-subtitle {
+  font-family: "Orbitron", sans-serif;
+  color: #00ff88;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.team-member-card {
+  border-left: 4px solid #00ff88;
+  padding-left: 25px;
+  margin-bottom: 50px;
+}
+
+.team-member-card.text-end {
+  border-left: none;
+  border-right: 4px solid #00ff88;
+  padding-left: 0;
+  padding-right: 25px;
+}
+
+.faq-item {
+  margin-bottom: 35px;
+}
+
+.faq-question {
+  color: #00ff88;
+  font-family: "Outfit", sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.faq-answer {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+/* Recommended Gamers Settings Dropdown Fix */
+.dropdown-menu.glass-card {
+  background: rgba(20, 20, 20, 0.98) !important;
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  backdrop-filter: blur(25px) !important;
+  z-index: 2000;
+}
+
+.dropdown-menu.glass-card .dropdown-header {
+  color: #00ff88 !important;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 15px 15px 5px !important;
+  opacity: 0.8;
+}
+
+.dropdown-menu.glass-card .form-select {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 8px;
+  margin: 0 10px 10px !important;
+  width: calc(100% - 20px);
+}
+
+.dropdown-menu.glass-card .form-select:focus {
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2) !important;
+}
+
+.dropdown-menu.glass-card .form-select option {
+  background-color: #111 !important;
+  color: white !important;
 }
