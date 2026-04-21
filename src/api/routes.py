@@ -27,7 +27,8 @@ def handle_sign_up():
     password = body.get("password")
     user_name = (body.get("user_name") or "").strip()
     date_of_birth = (body.get("date_of_birth") or "").strip()
-    security_question_answer = (body.get("security_question_answer") or "").strip()
+    security_question_answer = (
+        body.get("security_question_answer") or "").strip()
 
     if not all([email, password, user_name, date_of_birth, security_question_answer]):
         return jsonify({"msg": "all fields required"}), 400
@@ -43,7 +44,8 @@ def handle_sign_up():
     ).scalar_one_or_none()
     if taken is not None:
         return jsonify({"msg": "That username is taken"}), 400
-    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    days = ["monday", "tuesday", "wednesday",
+            "thursday", "friday", "saturday", "sunday"]
 
     first_name = (body.get("first_name") or "").strip() or None
     last_name = (body.get("last_name") or "").strip() or None
@@ -60,7 +62,7 @@ def handle_sign_up():
     db.session.add(new_user)
     db.session.commit()
     print(new_user.id)
-    for day in days: 
+    for day in days:
         new_day = Availability()
         new_day.day = day
         new_day.start_time = None
@@ -180,12 +182,12 @@ def update_profile():
         if "user_name" in data:
             target_username = data["user_name"].strip()
             if target_username and target_username != user.user_name:
-                exists = User.query.filter_by(user_name=target_username).first()
+                exists = User.query.filter_by(
+                    user_name=target_username).first()
                 if exists:
                     return jsonify({"error": "Username already taken"}), 400
                 user.user_name = target_username
 
-        # Update fields if provided
         if "first_name" in data:
             user.first_name = data["first_name"]
         if "last_name" in data:
@@ -193,15 +195,33 @@ def update_profile():
         if "profile_picture_url" in data:
             user.profile_picture_url = data["profile_picture_url"]
         if "availability" in data:
-            for avail_row in user.availability:
-                match = next((d for d in data["availability"] if d.get("day") == avail_row.day), None)
-                if match:
-                    avail_row.start_time = match.get("start")
-                    avail_row.end_time = match.get("end")
+            existing = {
+                avail_row.day: avail_row for avail_row in user.availability}
+            days_in_request = set()
+
+            for day_data in data["availability"]:
+                day = day_data.get("day")
+                if not day:
+                    continue
+                days_in_request.add(day)
+
+                if day in existing:
+                    existing[day].start_time = day_data.get("start")
+                    existing[day].end_time = day_data.get("end")
                 else:
+                    new_row = Availability(
+                        user_id=user_id,
+                        day=day,
+                        start_time=day_data.get("start"),
+                        end_time=day_data.get("end")
+                    )
+                    db.session.add(new_row)
+
+            for day, avail_row in existing.items():
+                if day not in days_in_request:
                     avail_row.start_time = None
                     avail_row.end_time = None
-        
+
         if "bio" in data:
             user.bio = data["bio"]
         if "favorite_game" in data:
@@ -210,7 +230,7 @@ def update_profile():
             user.preferred_genre = data["preferred_genre"]
         if "playstyle" in data:
             user.playstyle = data["playstyle"]
-        
+
         db.session.commit()
         return jsonify(user.serialize()), 200
     except Exception as e:
@@ -546,9 +566,11 @@ def get_recommendations():
             other_age = None
             if user.date_of_birth:
                 try:
-                    user_birth = datetime.strptime(user.date_of_birth, '%Y-%m-%d')
+                    user_birth = datetime.strptime(
+                        user.date_of_birth, '%Y-%m-%d')
                     other_age = today.year - user_birth.year - \
-                        ((today.month, today.day) < (user_birth.month, user_birth.day))
+                        ((today.month, today.day) <
+                         (user_birth.month, user_birth.day))
                 except ValueError:
                     pass
 
@@ -634,14 +656,17 @@ def send_friend_request():
         existing = FriendRequest.query.filter(
             FriendRequest.status == 'pending',
             db.or_(
-                db.and_(FriendRequest.sender_id == sender_id, FriendRequest.receiver_id == receiver_id),
-                db.and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == sender_id)
+                db.and_(FriendRequest.sender_id == sender_id,
+                        FriendRequest.receiver_id == receiver_id),
+                db.and_(FriendRequest.sender_id == receiver_id,
+                        FriendRequest.receiver_id == sender_id)
             )
         ).first()
         if existing:
             return jsonify({"error": "A pending request already exists"}), 400
 
-        req = FriendRequest(sender_id=sender_id, receiver_id=receiver_id, status='pending')
+        req = FriendRequest(sender_id=sender_id,
+                            receiver_id=receiver_id, status='pending')
         db.session.add(req)
         db.session.commit()
 
@@ -657,7 +682,8 @@ def get_friend_requests():
     """Get all pending incoming friend requests for the current user."""
     try:
         user_id = int(get_jwt_identity())
-        pending = FriendRequest.query.filter_by(receiver_id=user_id, status='pending').all()
+        pending = FriendRequest.query.filter_by(
+            receiver_id=user_id, status='pending').all()
 
         result = []
         for req in pending:
@@ -720,15 +746,18 @@ def get_request_status(other_user_id):
         # Check if already friends
         current_user = User.query.get(user_id)
         import json as _json
-        friends = _json.loads(current_user.friends) if current_user.friends else []
+        friends = _json.loads(
+            current_user.friends) if current_user.friends else []
         if other_user_id in friends:
             return jsonify({"status": "friends"}), 200
 
         # Check for any request in either direction
         req = FriendRequest.query.filter(
             db.or_(
-                db.and_(FriendRequest.sender_id == user_id, FriendRequest.receiver_id == other_user_id),
-                db.and_(FriendRequest.sender_id == other_user_id, FriendRequest.receiver_id == user_id)
+                db.and_(FriendRequest.sender_id == user_id,
+                        FriendRequest.receiver_id == other_user_id),
+                db.and_(FriendRequest.sender_id == other_user_id,
+                        FriendRequest.receiver_id == user_id)
             )
         ).order_by(FriendRequest.id.desc()).first()
 

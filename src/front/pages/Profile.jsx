@@ -76,7 +76,11 @@ export const Profile = () => {
 					favorite_game: data.favorite_game || "",
 					preferred_genre: data.preferred_genre || "",
 					playstyle: data.playstyle || "",
-					availability: data.availability || ""
+					availability: Array.isArray(data.availability)
+						? data.availability
+							.filter(a => a.start_time && a.end_time)
+							.map(a => ({ day: a.day, start: a.start_time, end: a.end_time }))
+						: []
 				})
 				setAvailableDays(data.availability)
 				if (data.availability && Array.isArray(data.availability)) {
@@ -542,7 +546,7 @@ export const Profile = () => {
 								{userProfile.first_name && (
 									<p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
 								)}
-								
+
 								{userProfile.bio && (
 									<div className="bio-quote-box">
 										<i className="fas fa-quote-left"></i>
@@ -580,16 +584,12 @@ export const Profile = () => {
 												{userProfile.availability
 													.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
 													.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
-													.slice(0, 2) // Just show first 2 for the "card" look
 													.map(availabilityRow => (
 														<p key={availabilityRow.id}>
 															<small>{availabilityRow.day.substring(0, 3).toUpperCase()}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}</small>
 														</p>
 													))
 												}
-												{userProfile.availability.filter(a => a.start_time && a.end_time).length > 2 && (
-													<p><small className="text-neon-green">+ More</small></p>
-												)}
 											</div>
 										</div>
 									)}
@@ -611,6 +611,10 @@ export const Profile = () => {
 												}
 											})
 											setAvailableDaysData(formatted)
+											const asArray = userProfile.availability
+												.filter(a => a.start_time && a.end_time)
+												.map(a => ({ day: a.day, start: a.start_time, end: a.end_time }))
+											setEditFormData(prev => ({ ...prev, availability: asArray }))
 										}
 										setIsEditingProfile(true)
 									}}
