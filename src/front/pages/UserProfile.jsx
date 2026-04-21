@@ -248,18 +248,14 @@ export const UserProfile = () => {
 											<strong>Availability</strong>
 											<div className="availability-summary">
 												{profile.availability
-													.filter(r => r.start_time && r.end_time)
-													.sort((a, b) => days.indexOf(a.day.charAt(0).toUpperCase() + a.day.slice(1)) - days.indexOf(b.day.charAt(0).toUpperCase() + b.day.slice(1)))
-													.slice(0, 2)
-													.map(r => (
-														<p key={r.id}>
-															<small>{r.day.substring(0, 3).toUpperCase()}: {formatTime(r.start_time)} - {formatTime(r.end_time)}</small>
+													.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
+													.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
+													.map(availabilityRow => (
+														<p key={availabilityRow.id}>
+															<small>{availabilityRow.day.substring(0, 3).toUpperCase()}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}</small>
 														</p>
 													))
 												}
-												{profile.availability.filter(a => a.start_time && a.end_time).length > 2 && (
-													<p><small className="text-neon-green">+ More</small></p>
-												)}
 											</div>
 										</div>
 									)}
