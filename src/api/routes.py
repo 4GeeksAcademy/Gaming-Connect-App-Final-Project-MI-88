@@ -607,15 +607,26 @@ def get_recommendations():
                                     'other_skill': other_skill
                                 })
 
-            recommendations.append({
-                'id': user.id,
-                'user_name': user.user_name,
-                'email': user.email,
-                'profile_picture_url': user.profile_picture_url,
-                'favorites': other_favorites,
-                'matching_games': matching_games,
-                'age': other_age
-            })
+            if not specific_game and skill_range == -1:
+                recommendations.append({
+                    'id': user.id,
+                    'user_name': user.user_name,
+                    'email': user.email,
+                    'profile_picture_url': user.profile_picture_url,
+                    'favorites': other_favorites,
+                    'matching_games': matching_games,
+                    'age': other_age
+                })
+            elif matching_games:
+                recommendations.append({
+                    'id': user.id,
+                    'user_name': user.user_name,
+                    'email': user.email,
+                    'profile_picture_url': user.profile_picture_url,
+                    'favorites': other_favorites,
+                    'matching_games': matching_games,
+                    'age': other_age
+                })
 
         recommendations.sort(key=lambda x: len(
             x['matching_games']), reverse=True)
