@@ -118,7 +118,7 @@ export const Home = () => {
 		}
 	}
 
-	const loadRecommendations = async () => {
+	const loadRecommendations = async (settings = recommendationSettings) => {
 		setLoadingRecommendations(true)
 		const backendUrl = import.meta.env.VITE_BACKEND_URL
 		const token = localStorage.getItem('token')
@@ -129,9 +129,9 @@ export const Home = () => {
 		}
 
 		const params = new URLSearchParams({
-			skill_range: recommendationSettings.skillRange === 'any' ? '-1' : recommendationSettings.skillRange,
-			age_range: recommendationSettings.ageRange === 'any' ? '-1' : recommendationSettings.ageRange,
-			specific_game: recommendationSettings.specificGame
+			skill_range: settings.skillRange === 'any' ? '-1' : settings.skillRange,
+			age_range: settings.ageRange === 'any' ? '-1' : settings.ageRange,
+			specific_game: settings.specificGame
 		})
 
 		try {
@@ -151,7 +151,11 @@ export const Home = () => {
 	}
 
 	const handleRecommendationSettingChange = (setting, value) => {
-		setRecommendationSettings(prev => ({ ...prev, [setting]: value }))
+		const newSettings = { ...recommendationSettings, [setting]: value }
+		setRecommendationSettings(newSettings)
+		if (userProfile) {
+			loadRecommendations(newSettings)
+		}
 	}
 
 	useEffect(() => {
@@ -163,7 +167,7 @@ export const Home = () => {
 		if (userProfile) {
 			loadRecommendations()
 		}
-	}, [userProfile, recommendationSettings])
+	}, [userProfile])
 
 	return (
 		<>
