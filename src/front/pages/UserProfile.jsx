@@ -122,21 +122,22 @@ export const UserProfile = () => {
 	const renderConnectionButton = () => {
 		switch (connectionStatus) {
 			case "friends":
-				return <button className="btn btn-success" disabled>Friends</button>
+				return <button className="glass-pill-button px-4 py-2" style={{ background: 'rgba(0, 255, 136, 0.2)', border: '1px solid #00ff88', color: '#00ff88' }} disabled>Friends</button>
 			case "request_sent":
-				return <button className="btn btn-secondary" disabled>Request Sent</button>
+				return <button className="glass-pill-button px-4 py-2" style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'rgba(255, 255, 255, 0.5)' }} disabled>Request Sent</button>
 			case "request_received":
 				return (
-					<div className="d-flex gap-2">
+					<div className="d-flex gap-3">
 						<button
-							className="btn btn-primary"
+							className="glass-pill-button px-4 py-2 bg-neon-green text-dark fw-bold"
 							onClick={() => handleRespond("accepted")}
 							disabled={actionLoading}
 						>
 							Accept Request
 						</button>
 						<button
-							className="btn btn-outline-danger"
+							className="glass-pill-button px-4 py-2"
+							style={{ background: 'rgba(255, 0, 0, 0.1)', border: '1px solid #ff4444', color: '#ff4444' }}
 							onClick={() => handleRespond("declined")}
 							disabled={actionLoading}
 						>
@@ -145,11 +146,11 @@ export const UserProfile = () => {
 					</div>
 				)
 			case "declined":
-				return <button className="btn btn-secondary" disabled>Request Declined</button>
+				return <button className="glass-pill-button px-4 py-2" disabled>Request Declined</button>
 			default:
 				return (
 					<button
-						className="btn btn-primary"
+						className="glass-pill-button px-4 py-2 bg-neon-green text-dark fw-bold"
 						onClick={handleSendRequest}
 						disabled={actionLoading}
 					>
@@ -206,11 +207,7 @@ export const UserProfile = () => {
 
 						<div className="profile-info">
 							<h1 className="gamertag">{profile.user_name}</h1>
-							<div className="badge-system">
-								<span className="badge-item">Weekend Warrior</span>
-								<span className="badge-item">Friendly Gamer</span>
-								<span className="badge-item badge-red">Killamanjaro</span>
-							</div>
+
 							<div className="user-details">
 								{profile.first_name && (
 									<p><strong>Name:</strong> {profile.first_name} {profile.last_name}</p>
@@ -236,32 +233,38 @@ export const UserProfile = () => {
 									)}
 								</div>
 
-								{profile.playstyle && (
-									<div className="playstyle-box mb-3">
-										<strong>Playstyle:</strong>
-										<span className={`playstyle-tag ${profile.playstyle.toLowerCase().replace(" ", "-")}`}>
-											{profile.playstyle}
-										</span>
-									</div>
-								)}
+								<div className="gaming-stats-container">
+									{profile.playstyle && (
+										<div className="stat-info-group">
+											<strong>Playstyle</strong>
+											<span className={`playstyle-tag ${profile.playstyle.toLowerCase().replace(" ", "-")}`}>
+												{profile.playstyle}
+											</span>
+										</div>
+									)}
 
-								{profile.availability && profile.availability.some(r => r.start_time && r.end_time) && (
-									<div>
-										<strong>Availability:</strong>
-										{profile.availability
-											.filter(r => r.start_time && r.end_time)
-											.sort((a, b) => days.indexOf(a.day.charAt(0).toUpperCase() + a.day.slice(1)) - days.indexOf(b.day.charAt(0).toUpperCase() + b.day.slice(1)))
-											.map(r => (
-												<p key={r.id}>
-													{r.day.charAt(0).toUpperCase() + r.day.slice(1)}: {formatTime(r.start_time)} - {formatTime(r.end_time)}
-												</p>
-											))
-										}
-									</div>
-								)}
+									{profile.availability && profile.availability.some(r => r.start_time && r.end_time) && (
+										<div className="stat-info-group">
+											<strong>Availability</strong>
+											<div className="availability-summary">
+												{profile.availability
+													.filter(availabilityRow => availabilityRow.start_time && availabilityRow.end_time)
+													.sort((dayA, dayB) => days.indexOf(dayA.day.charAt(0).toUpperCase() + dayA.day.slice(1)) - days.indexOf(dayB.day.charAt(0).toUpperCase() + dayB.day.slice(1)))
+													.map(availabilityRow => (
+														<p key={availabilityRow.id}>
+															<small>{availabilityRow.day.substring(0, 3).toUpperCase()}: {formatTime(availabilityRow.start_time)} - {formatTime(availabilityRow.end_time)}</small>
+														</p>
+													))
+												}
+											</div>
+										</div>
+									)}
+								</div>
 							</div>
 
-							{renderConnectionButton()}
+							<div className="profile-actions mt-4">
+								{renderConnectionButton()}
+							</div>
 						</div>
 					</div>
 				</div>

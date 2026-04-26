@@ -9,12 +9,10 @@ export const Navbar = () => {
 	const [userName, setUserName] = useState("");
 	const [dark, setDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
 
-	// username in nav updates when you navigate (e.g. come back from /profile)
 	useEffect(() => {
 		setUserName(localStorage.getItem("user_name") || "");
 	}, [loc.pathname]);
 
-	// dark/light — bootstrap 5 uses data-bs-theme on the root
 	useEffect(() => {
 		const mode = dark ? "dark" : "light";
 		document.documentElement.setAttribute("data-bs-theme", mode);
@@ -29,75 +27,31 @@ export const Navbar = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg border-bottom bg-body-tertiary">
-			<div className="container">
-				<Link to="/home">
-					<span className="navbar-brand mb-0 h1">GuildUp</span>
+		<div className="navbar-pill-container d-flex align-items-center justify-content-between px-0">
+			<nav className="navbar-pill">
+				<Link to={localStorage.getItem("token") ? "/home" : "/"} className="brand-capsule">
+					<i className="fa-solid fa-circle-nodes brand-globe"></i>
+					<span className="brand-text">
+						<span className="text-white">Guild</span>
+						<span className="text-neon-green">Up</span>
+					</span>
 				</Link>
-				<div className="ms-auto d-flex align-items-center gap-2 flex-wrap justify-content-end">
-					{userName ? (
-						<span className="navbar-text small text-end">{userName}</span>
-					) : null}
-					{userName ? (
-						<button
-							type="button"
-							className="btn btn-outline-secondary btn-sm"
-							onClick={logout}>
-							Log out
-						</button>
-					) : (
-						<>
-							<Link to="/login" className="btn btn-outline-secondary btn-sm">
-								Sign in
-							</Link>
-							<Link to="/signup" className="btn btn-outline-primary btn-sm">
-								Sign up
-							</Link>
-						</>
-					)}
-					<button
-						type="button"
-						className="btn btn-outline-secondary btn-sm"
-						onClick={() => navigate("/profile")}>
-						<i className="fa-solid fa-user me-1"></i>
-						Profile
-					</button>
 
-					<div className="dropdown">
-						<button
-							type="button"
-							className="btn btn-outline-secondary btn-sm dropdown-toggle"
-							data-bs-toggle="dropdown">
-							<i className="fa-solid fa-gear me-1"></i>
-							Settings
-						</button>
-						<ul className="dropdown-menu dropdown-menu-end">
-							<li>
-								<button
-									type="button"
-									className="dropdown-item d-flex justify-content-between align-items-center"
-									onClick={() => setDark((d) => !d)}>
-									<span>Dark mode</span>
-									<span className="badge text-bg-secondary">{dark ? "On" : "Off"}</span>
-								</button>
-							</li>
-							<li>
-								<hr className="dropdown-divider" />
-							</li>
-							<li>
-								<Link className="dropdown-item" to="/profile">
-									Profile settings
-								</Link>
-							</li>
-						</ul>
-					</div>
-					<Link to="/demo">
-						<button type="button" className="btn btn-primary btn-sm">
-							Check the Context in actionn
-						</button>
-					</Link>
+				<Link to="/home" className="action-pill-button">Home</Link>
+				<Link to="/profile" className="action-pill-button">Profile</Link>
+			</nav>
+
+			{userName ? (
+				<div className="navbar-pill py-1 px-1 d-flex align-items-center">
+					<span className="text-white small d-none d-md-inline ms-3 me-3">{userName}</span>
+					<button className="action-pill-button px-4" onClick={logout}>Logout</button>
 				</div>
-			</div>
-		</nav>
+			) : (
+				<div className="navbar-pill py-1 px-1 d-flex align-items-center gap-1">
+					<Link to="/login" className="action-pill-button">Sign In</Link>
+					<Link to="/signup" className="action-pill-button px-4">Sign Up</Link>
+				</div>
+			)}
+		</div>
 	);
 };

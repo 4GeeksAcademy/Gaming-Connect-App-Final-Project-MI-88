@@ -27,8 +27,10 @@ def handle_sign_up():
     password = body.get("password")
     user_name = (body.get("user_name") or "").strip()
     date_of_birth = (body.get("date_of_birth") or "").strip()
+    security_question_answer = (
+        body.get("security_question_answer") or "").strip()
 
-    if not all([email, password, user_name, date_of_birth]):
+    if not all([email, password, user_name, date_of_birth, security_question_answer]):
         return jsonify({"msg": "all fields required"}), 400
 
     potential_user = db.session.execute(
@@ -42,18 +44,25 @@ def handle_sign_up():
     ).scalar_one_or_none()
     if taken is not None:
         return jsonify({"msg": "That username is taken"}), 400
-    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    days = ["monday", "tuesday", "wednesday",
+            "thursday", "friday", "saturday", "sunday"]
+
+    first_name = (body.get("first_name") or "").strip() or None
+    last_name = (body.get("last_name") or "").strip() or None
 
     new_user = User()
     new_user.email = email
     new_user.password = password
     new_user.user_name = user_name
     new_user.date_of_birth = date_of_birth
+    new_user.security_question_answer = security_question_answer
+    new_user.first_name = first_name
+    new_user.last_name = last_name
     new_user.is_active = True
     db.session.add(new_user)
     db.session.commit()
     print(new_user.id)
-    for day in days: 
+    for day in days:
         new_day = Availability()
         new_day.day = day
         new_day.start_time = None
@@ -170,7 +179,15 @@ def update_profile():
 
         data = request.json
 
-        # Update fields if provided
+        if "user_name" in data:
+            target_username = data["user_name"].strip()
+            if target_username and target_username != user.user_name:
+                exists = User.query.filter_by(
+                    user_name=target_username).first()
+                if exists:
+                    return jsonify({"error": "Username already taken"}), 400
+                user.user_name = target_username
+
         if "first_name" in data:
             user.first_name = data["first_name"]
         if "last_name" in data:
@@ -178,15 +195,33 @@ def update_profile():
         if "profile_picture_url" in data:
             user.profile_picture_url = data["profile_picture_url"]
         if "availability" in data:
-            for avail_row in user.availability:
-                match = next((d for d in data["availability"] if d.get("day") == avail_row.day), None)
-                if match:
-                    avail_row.start_time = match.get("start")
-                    avail_row.end_time = match.get("end")
+            existing = {
+                avail_row.day: avail_row for avail_row in user.availability}
+            days_in_request = set()
+
+            for day_data in data["availability"]:
+                day = day_data.get("day")
+                if not day:
+                    continue
+                days_in_request.add(day)
+
+                if day in existing:
+                    existing[day].start_time = day_data.get("start")
+                    existing[day].end_time = day_data.get("end")
                 else:
+                    new_row = Availability(
+                        user_id=user_id,
+                        day=day,
+                        start_time=day_data.get("start"),
+                        end_time=day_data.get("end")
+                    )
+                    db.session.add(new_row)
+
+            for day, avail_row in existing.items():
+                if day not in days_in_request:
                     avail_row.start_time = None
                     avail_row.end_time = None
-        
+
         if "bio" in data:
             user.bio = data["bio"]
         if "favorite_game" in data:
@@ -195,7 +230,7 @@ def update_profile():
             user.preferred_genre = data["preferred_genre"]
         if "playstyle" in data:
             user.playstyle = data["playstyle"]
-        
+
         db.session.commit()
         return jsonify(user.serialize()), 200
     except Exception as e:
@@ -473,6 +508,28 @@ def search_users():
         return jsonify({"error": str(e)}), 500
 
 
+@api.route('/users/search', methods=['GET'])
+@jwt_required()
+def search_gamers_by_term():
+    """Simple search for users by username."""
+    try:
+        user_id = get_jwt_identity()
+        term = request.args.get('term', '').strip()
+
+        if not term:
+            return jsonify([]), 200
+
+        # Query users whose username contains the term, excluding the current user
+        users = User.query.filter(
+            User.user_name.ilike(f'%{term}%'),
+            User.id != user_id
+        ).all()
+
+        return jsonify([user.serialize() for user in users]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @api.route('/recommendations', methods=['GET'])
 @jwt_required()
 def get_recommendations():
@@ -488,51 +545,42 @@ def get_recommendations():
         age_range = int(request.args.get('age_range', 5))
         specific_game = request.args.get('specific_game', '').strip()
 
-        # Calculate current user's age
-        if not current_user.date_of_birth:
-            return jsonify({"error": "User date of birth not set"}), 400
+        user_age = None
+        today = datetime.today()
+        if current_user.date_of_birth:
+            try:
+                birth_date = datetime.strptime(
+                    current_user.date_of_birth, '%Y-%m-%d')
+                user_age = today.year - birth_date.year - \
+                    ((today.month, today.day) < (birth_date.month, birth_date.day))
+            except ValueError:
+                pass
 
-        try:
-            birth_date = datetime.strptime(
-                current_user.date_of_birth, '%Y-%m-%d')
-            today = datetime.today()
-            user_age = today.year - birth_date.year - \
-                ((today.month, today.day) < (birth_date.month, birth_date.day))
-        except ValueError:
-            return jsonify({"error": "Invalid date of birth format"}), 400
-
-        # Get current user's favorites
         user_favorites = json.loads(
             current_user.favorites) if current_user.favorites else []
-        if not user_favorites:
-            return jsonify([]), 200  # No favorites, no recommendations
 
-        # Get all other users
         other_users = User.query.filter(User.id != user_id).all()
         recommendations = []
 
         for user in other_users:
-            if not user.date_of_birth:
-                continue
+            other_age = None
+            if user.date_of_birth:
+                try:
+                    user_birth = datetime.strptime(
+                        user.date_of_birth, '%Y-%m-%d')
+                    other_age = today.year - user_birth.year - \
+                        ((today.month, today.day) <
+                         (user_birth.month, user_birth.day))
+                except ValueError:
+                    pass
 
-            try:
-                user_birth = datetime.strptime(user.date_of_birth, '%Y-%m-%d')
-                other_age = today.year - user_birth.year - \
-                    ((today.month, today.day) < (user_birth.month, user_birth.day))
-            except ValueError:
-                continue
+            if age_range != -1 and user_age is not None and other_age is not None:
+                if abs(user_age - other_age) > age_range:
+                    continue
 
-            # Check age range (skip if -1, meaning any age)
-            if age_range != -1 and abs(user_age - other_age) > age_range:
-                continue
-
-            # Get other user's favorites
             other_favorites = json.loads(
                 user.favorites) if user.favorites else []
-            if not other_favorites:
-                continue
 
-            # Find matching games
             matching_games = []
             for user_game in user_favorites:
                 user_game_name = user_game.get('name', '').lower()
@@ -542,9 +590,7 @@ def get_recommendations():
                     other_game_name = other_game.get('name', '').lower()
                     other_skill = other_game.get('skill_level', 1)
 
-                    # Check game match
                     if specific_game:
-                        # Focus on specific game
                         if user_game_name == specific_game.lower() and other_game_name == specific_game.lower():
                             if skill_range == -1 or abs(user_skill - other_skill) <= skill_range:
                                 matching_games.append({
@@ -553,7 +599,6 @@ def get_recommendations():
                                     'other_skill': other_skill
                                 })
                     else:
-                        # Any matching game
                         if user_game_name == other_game_name:
                             if skill_range == -1 or abs(user_skill - other_skill) <= skill_range:
                                 matching_games.append({
@@ -562,17 +607,27 @@ def get_recommendations():
                                     'other_skill': other_skill
                                 })
 
-            if matching_games:
+            if not specific_game and skill_range == -1:
                 recommendations.append({
                     'id': user.id,
                     'user_name': user.user_name,
                     'email': user.email,
+                    'profile_picture_url': user.profile_picture_url,
+                    'favorites': other_favorites,
+                    'matching_games': matching_games,
+                    'age': other_age
+                })
+            elif matching_games:
+                recommendations.append({
+                    'id': user.id,
+                    'user_name': user.user_name,
+                    'email': user.email,
+                    'profile_picture_url': user.profile_picture_url,
                     'favorites': other_favorites,
                     'matching_games': matching_games,
                     'age': other_age
                 })
 
-        # Sort by number of matching games (most matches first)
         recommendations.sort(key=lambda x: len(
             x['matching_games']), reverse=True)
 
@@ -612,14 +667,17 @@ def send_friend_request():
         existing = FriendRequest.query.filter(
             FriendRequest.status == 'pending',
             db.or_(
-                db.and_(FriendRequest.sender_id == sender_id, FriendRequest.receiver_id == receiver_id),
-                db.and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == sender_id)
+                db.and_(FriendRequest.sender_id == sender_id,
+                        FriendRequest.receiver_id == receiver_id),
+                db.and_(FriendRequest.sender_id == receiver_id,
+                        FriendRequest.receiver_id == sender_id)
             )
         ).first()
         if existing:
             return jsonify({"error": "A pending request already exists"}), 400
 
-        req = FriendRequest(sender_id=sender_id, receiver_id=receiver_id, status='pending')
+        req = FriendRequest(sender_id=sender_id,
+                            receiver_id=receiver_id, status='pending')
         db.session.add(req)
         db.session.commit()
 
@@ -635,7 +693,8 @@ def get_friend_requests():
     """Get all pending incoming friend requests for the current user."""
     try:
         user_id = int(get_jwt_identity())
-        pending = FriendRequest.query.filter_by(receiver_id=user_id, status='pending').all()
+        pending = FriendRequest.query.filter_by(
+            receiver_id=user_id, status='pending').all()
 
         result = []
         for req in pending:
@@ -698,15 +757,18 @@ def get_request_status(other_user_id):
         # Check if already friends
         current_user = User.query.get(user_id)
         import json as _json
-        friends = _json.loads(current_user.friends) if current_user.friends else []
+        friends = _json.loads(
+            current_user.friends) if current_user.friends else []
         if other_user_id in friends:
             return jsonify({"status": "friends"}), 200
 
         # Check for any request in either direction
         req = FriendRequest.query.filter(
             db.or_(
-                db.and_(FriendRequest.sender_id == user_id, FriendRequest.receiver_id == other_user_id),
-                db.and_(FriendRequest.sender_id == other_user_id, FriendRequest.receiver_id == user_id)
+                db.and_(FriendRequest.sender_id == user_id,
+                        FriendRequest.receiver_id == other_user_id),
+                db.and_(FriendRequest.sender_id == other_user_id,
+                        FriendRequest.receiver_id == user_id)
             )
         ).order_by(FriendRequest.id.desc()).first()
 
@@ -722,3 +784,29 @@ def get_request_status(other_user_id):
         return jsonify({"status": req.status}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@api.route('/forgot-password', methods=['POST'])
+def handle_forgot_password():
+    body = request.json or {}
+    email = (body.get("email") or "").strip()
+    new_password = body.get("new_password")
+    security_word = body.get("security_word")
+
+    if not all([email, new_password, security_word]):
+        return jsonify({"msg": "all fields required"}), 400
+
+    user = db.session.execute(
+        select(User).where(User.email == email)
+    ).scalar_one_or_none()
+
+    if user is None:
+        return jsonify({"msg": "No account found with that email"}), 404
+
+    if user.security_question_answer != security_word:
+        return jsonify({"msg": "Security answer is incorrect"}), 401
+
+    user.password = new_password
+    db.session.commit()
+
+    return jsonify({"msg": "Password reset successfully"}), 200
